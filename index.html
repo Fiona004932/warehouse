@@ -504,7 +504,7 @@ function renderProductL3() {
   const ranked = Object.entries(map).map(([l3, ys]) => {
     const total = years.reduce((s, y) => s + (ys[y] || 0), 0);
     return { l3, ys, total };
-  }).filter(r => r.total >= 100000).sort((a, b) => b.total - a.total).slice(0, 12);
+  }).filter(r => r.total >= 100000 && !['未知','一般通用件','技术专用件'].includes(r.l3)).sort((a, b) => b.total - a.total).slice(0, 12);
   
   const labels = ranked.map(r => r.l3);
   const datasets = years.map((y, i) => ({
