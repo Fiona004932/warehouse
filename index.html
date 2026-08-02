@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRM 销售分析看板</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
+</script>
+<style>
+:root {
+  --bg: #0f172a; --card: #1e293b; --border: #334155;
+  --text: #e2e8f0; --text2: #94a3b8; --accent: #3b82f6;
+  --green: #22c55e; --orange: #f59e0b; --red: #ef4444; --purple: #8b5cf6;
+  --teal: #14b8a6; --pink: #ec4899;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+.header { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-bottom: 1px solid var(--border); padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+.header h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+.header h1 span { color: var(--accent); }
+.header .subtitle { font-size: 13px; color: var(--text2); margin-top: 4px; }
+.header .stats { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+.header .stat-item { background: var(--card); border-radius: 8px; padding: 8px 16px; text-align: center; min-width: 80px; }
+.header .stat-item .val { font-size: 20px; font-weight: 700; color: var(--accent); }
+.header .stat-item .lbl { font-size: 11px; color: var(--text2); }
+.header .refresh-btn { background: var(--accent); color: #fff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; transition: opacity .2s; }
+.header .refresh-btn:hover { opacity: .85; }
+.tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); background: var(--card); padding: 0 24px; }
+.tab { padding: 12px 24px; cursor: pointer; font-size: 14px; color: var(--text2); border-bottom: 2px solid transparent; transition: all .2s; }
+.tab:hover { color: var(--text); }
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+.filters { display: flex; gap: 12px; padding: 12px 24px; background: var(--card); border-bottom: 1px solid var(--border); flex-wrap: wrap; align-items: center; }
+.filters select, .filters input { background: var(--bg); color: var(--text); border: 1px solid var(--border); padding: 6px 12px; border-radius: 6px; font-size: 13px; min-width: 100px; }
+.filters label { font-size: 13px; color: var(--text2); }
+.filters .btn { background: var(--accent); color: #fff; border: none; padding: 6px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; }
+.main { padding: 20px 24px; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+.kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 20px; }
+.kpi-card { background: var(--card); border-radius: 10px; padding: 16px 20px; border-left: 3px solid var(--accent); }
+.kpi-card.green { border-left-color: var(--green); }
+.kpi-card.orange { border-left-color: var(--orange); }
+.kpi-card.purple { border-left-color: var(--purple); }
+.kpi-card .kpi-title { font-size: 12px; color: var(--text2); margin-bottom: 6px; }
+.kpi-card .kpi-value { font-size: 26px; font-weight: 700; }
+.kpi-card .kpi-sub { font-size: 12px; color: var(--text2); margin-top: 4px; }
+.chart-row { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 20px; }
+.chart-row.full { grid-template-columns: 1fr; }
+.chart-row.third { grid-template-columns: 1fr 1fr 1fr; }
+.chart-card { background: var(--card); border-radius: 10px; padding: 20px; }
+.chart-card h3 { font-size: 15px; margin-bottom: 16px; color: var(--text); font-weight: 600; }
+.chart-card canvas { max-height: 350px; }
+.footer { text-align: center; padding: 16px; color: var(--text2); font-size: 12px; border-top: 1px solid var(--border); margin-top: 20px; }
+.multi-dropdown { position: relative; display: inline-block; }
+.multi-trigger { background: var(--bg); color: var(--text); border: 1px solid var(--border); padding: 6px 12px; border-radius: 6px; font-size: 13px; cursor: pointer; min-width: 80px; user-select: none; }
+.multi-panel { display: none; position: absolute; top: 100%; left: 0; background: var(--card); border: 1px solid var(--border); border-radius: 6px; z-index: 100; min-width: 100px; max-height: 200px; overflow-y: auto; padding: 4px 0; margin-top: 2px; }
+.multi-panel.show { display: block; }
+.multi-panel label { display: block; padding: 4px 12px; cursor: pointer; font-size: 13px; white-space: nowrap; }
+.multi-panel label:hover { background: rgba(59,130,246,0.15); }
+.multi-panel input[type=checkbox] { margin-right: 6px; }
+.loading { text-align: center; padding: 60px; color: var(--text2); }
+.loading .spinner { display: inline-block; width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 12px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (max-width: 768px) {
+  .chart-row, .chart-row.third { grid-template-columns: 1fr; }
+  .header { flex-direction: column; text-align: center; }
+  .header .stats { justify-content: center; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>📊 CRM <span>销售分析看板</span></h1>
+    <div class="subtitle">亚太一区 · 已审核 · 云端实时数据</div>
+  </div>
+  <div class="stats">
+    <button class="refresh-btn" onclick="loadData()">🔄 刷新</button>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('overview')">📈 销售总览</div>
+  <div class="tab" onclick="switchTab('dealer')">🏢 客户分析</div>
+</div>
+
+<div class="filters">
+  <label>年份</label><select id="filterYear"><option value="">全部年份</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026" selected>2026</option></select>
+  <label>月份</label><div class="multi-dropdown" id="monthDropdown">
+    <div class="multi-trigger" id="monthTrigger">全部月份 ▾</div>
+    <div class="multi-panel" id="monthPanel"></div>
+  </div>
+  <label>部门</label><select id="filterDept" disabled><option value="">全部部门</option></select>
+  <label>销售员</label><select id="filterSales" disabled><option value="">全部销售员</option></select>
+  <label>国家</label><select id="filterCountry" disabled><option value="">全部国家</option></select>
+  <button class="btn" onclick="applyFilters()">应用筛选</button>
+</div>
+
+<div class="main">
+  <!-- TAB 1: Overview -->
+  <div class="tab-content active" id="tab-overview">
+    <div class="kpi-row">
+      <div class="kpi-card"><div class="kpi-title">📅 本月销售额</div><div class="kpi-value" id="kpi-month">--</div></div>
+      <div class="kpi-card green"><div class="kpi-title">📊 年度累计</div><div class="kpi-value" id="kpi-year">--</div></div>
+      <div class="kpi-card orange"><div class="kpi-title">📋 累计订单���</div><div class="kpi-value" id="kpi-orders">--</div></div>
+      <div class="kpi-card purple"><div class="kpi-title">🌍 覆盖国家</div><div class="kpi-value" id="kpi-countries">--</div></div>
+    </div>
+    <div class="chart-row" style="grid-template-columns: 1fr 1fr;">
+      <div class="chart-card"><h3>📅 月度销售趋势（同比）</h3><canvas id="chartMonthly"></canvas></div>
+      <div class="chart-card"><h3>🏆 TOP 10 销售员业绩</h3><canvas id="chartTopSales"></canvas></div>
+    </div>
+    <div class="chart-row third">
+      <div class="chart-card"><h3>🌍 各国销售额占比</h3><canvas id="chartCountry"></canvas></div>
+      <div class="chart-card"><h3>📊 各部门业绩对比</h3><canvas id="chartDept"></canvas></div>
+      <div class="chart-card"><h3>📈 月度订单量趋势</h3><canvas id="chartOrderTrend"></canvas></div>
+    </div>
+  </div>
+  
+  <!-- TAB 2: Dealer Analysis -->
+  <div class="tab-content" id="tab-dealer">
+    <div class="kpi-row">
+      <div class="kpi-card"><div class="kpi-title">👥 活跃客户</div><div class="kpi-value" id="kpi-dealers">--</div></div>
+      <div class="kpi-card green"><div class="kpi-title">💰 客户总销售额</div><div class="kpi-value" id="kpi-dealer-amount">--</div></div>
+      <div class="kpi-card orange"><div class="kpi-title">📦 平均订单金额</div><div class="kpi-value" id="kpi-avg-order">--</div></div>
+    </div>
+    <div class="chart-row" style="grid-template-columns: 1fr 2fr;">
+      <div class="chart-card"><h3>📊 客户三年业绩对比表（累计3年TOP 10）</h3><div id="dealerTable" style="max-height:450px;overflow-y:auto;"></div></div>
+      <div class="chart-card" style="position:relative;"><h3 id="l3ChartTitle">📦 客户产品销售额分布（L3分类）</h3>
+      <canvas id="chartProductL3"></canvas>
+      <div id="l3Summary" style="position:absolute;right:24px;bottom:50%;transform:translateY(50%);width:240px;background:rgba(30,41,59,0.85);border:1px solid var(--border);border-radius:8px;padding:12px;font-size:11px;line-height:1.5;max-height:380px;overflow-y:auto;"></div>
+    </div>
+    </div>
+    <div class="chart-row">
+      <div class="chart-card"><h3 id="dealerMonthlyTitle">📅 客户每月业绩</h3><canvas id="chartDealerMonthly"></canvas></div>
+      <div class="chart-card"><h3 id="factoryChartTitle">🏭 按工厂销售额分布</h3><canvas id="chartFactory"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  数据自动同步 · 上次更新: <span id="lastUpdate">--</span> · 手机/电脑任意网络访问 · CloudStudio
+</div>
+
+<script>
+// ==================== DATA & STATE ====================
+let rawData = [];
+let filteredData = [];
+let charts = {};
+
+// ==================== DATA LOADING ====================
+async function loadData() {
+  document.querySelector('.loading')?.remove();
+  try {
+    const resp = await fetch('data.json?v=' + Date.now());
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    rawData = await resp.json();
+    console.log('Loaded', rawData.length, 'records from data.json');
+  } catch(e) {
+    console.warn('Loading from data.json failed:', e.message);
+    rawData = generateDemoData();
+  }
+  processData();
+  // Failsafe: re-apply filters after a short delay to ensure DOM is ready
+  setTimeout(() => { applyFilters(); }, 500);
+}
+
+function processData() {
+  try {
+    filteredData = [...rawData];
+    populateFilters();
+    applyFilters(true);
+  } catch(e) {
+    console.error('processData error:', e.message);
+  }
+}
+
+function getMulti(selectId) {
+  if (selectId === 'filterMonth') {
+    // Custom checkbox dropdown
+    return getSelectedMonths();
+  }
+  // Fallback for native multi-select
+  const sel = document.getElementById(selectId);
+  if (sel && sel.multiple) return Array.from(sel.selectedOptions).map(o => o.value).filter(Boolean);
+  return [];
+}
+
+function getSelectedMonths() {
+  const cbs = document.querySelectorAll('#monthPanel input[type=checkbox]:checked');
+  return Array.from(cbs).map(cb => cb.value);
+}
+
+function updateMonthLabel() {
+  const selected = getSelectedMonths();
+  document.getElementById('monthTrigger').textContent = selected.length > 0 ? selected.join(',') + '月' : '全部月份 ▾';
+}
+
+// Initialize month dropdown
+function buildMonthDropdown() {
+  const panel = document.getElementById('monthPanel');
+  const trigger = document.getElementById('monthTrigger');
+  panel.innerHTML = '';
+  ['01','02','03','04','05','06','07','08','09','10','11','12'].forEach(m => {
+    const lbl = document.createElement('label');
+    lbl.innerHTML = `<input type="checkbox" value="${m}" onchange="updateMonthLabel()">${m}月`;
+    panel.appendChild(lbl);
+  });
+  trigger.onclick = (e) => { e.stopPropagation(); panel.classList.toggle('show'); };
+  document.addEventListener('click', () => panel.classList.remove('show'));
+  panel.addEventListener('click', (e) => e.stopPropagation());
+}
+
+function applyFilters(silent) {
+  const year = document.getElementById('filterYear').value;
+  const months = getMulti('filterMonth');
+  const dept = document.getElementById('filterDept').value;
+  const sales = document.getElementById('filterSales').value;
+  const country = document.getElementById('filterCountry').value;
+  
+  filteredData = rawData.filter(r => {
+    const d = r['审核日期'] || r['check_date'] || '';
+    const y = d.substring(0, 4);
+    const m = d.substring(5, 7);
+    if (year && y !== year) return false;
+    if (months.length > 0 && !months.includes(m)) return false;
+    if (dept && (r['部门'] || '') !== dept) return false;
+    if (sales && (r['业务员姓名'] || '') !== sales) return false;
+    if (country && (r['国家'] || '') !== country) return false;
+    return true;
+  });
+  
+  updateKPIs();
+  selectedDealer = null; // Reset dealer selection when filters change
+  renderAllCharts();
+  document.getElementById('lastUpdate').textContent = new Date().toLocaleString('zh-CN');
+}
+
+function populateFilters() {
+  const currentYear = new Date().getFullYear();
+  const yearsAllowed = [String(currentYear), String(currentYear-1), String(currentYear-2)];
+  const years = new Set(yearsAllowed), months = new Set(), depts = new Set(), salesSet = new Set(), countries = new Set();
+  rawData.forEach(r => {
+    const d = (r['审核日期'] || r['check_date'] || '');
+    if (d.length >= 7) { const y = d.substring(0,4); if (yearsAllowed.includes(y)) years.add(y); months.add(d.substring(5,7)); }
+    if (r['部门']) depts.add(r['部门']);
+    if (r['业务员姓名']) salesSet.add(r['业务员姓名']);
+    if (r['国家']) countries.add(r['国家']);
+  });
+  console.log('populateFilters:', { depts: depts.size, sales: salesSet.size, countries: countries.size, months: months.size });
+  fillSelect('filterDept', [...depts].sort());
+  fillSelect('filterSales', [...salesSet].sort());
+  fillSelect('filterCountry', [...countries].sort());
+  // Enable filters now that data is loaded
+  ['filterDept','filterSales','filterCountry'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.disabled = false;
+  });
+}
+
+function fillSelect(id, values, isMonth) {
+  const sel = document.getElementById(id);
+  sel.innerHTML = '<option value="">' + (isMonth ? '全部月份' : (id === 'filterYear' ? '全部年份' : (id === 'filterDept' ? '全部部门' : (id === 'filterSales' ? '全部销售员' : '全部国家')))) + '</option>';
+  values.forEach(v => {
+    const opt = document.createElement('option');
+    opt.value = v;
+    opt.textContent = isMonth ? v + '月' : v;
+    sel.appendChild(opt);
+  });
+}
+
+// ==================== KPIs ====================
+function updateKPIs() {
+  const total = filteredData.length;
+  const totalAmount = filteredData.reduce((s, r) => s + (parseFloat(r['折前不含税订单总金额(CNY)']) || 0), 0);
+  const uniqueOrders = new Set(filteredData.map(r => r['订单编号'])).size;
+  const uniqueCountries = new Set(filteredData.map(r => r['国家']).filter(Boolean)).size;
+  const uniqueDealers = new Set(filteredData.map(r => r['经销商']).filter(Boolean)).size;
+  
+  document.getElementById('kpi-month').textContent = '¥' + (totalAmount / 10000).toFixed(1) + '万';
+  document.getElementById('kpi-year').textContent = '¥' + (totalAmount / 10000).toFixed(1) + '万';
+  document.getElementById('kpi-orders').textContent = uniqueOrders + ' 单';
+  document.getElementById('kpi-countries').textContent = uniqueCountries;
+  document.getElementById('kpi-dealers').textContent = uniqueDealers;
+  document.getElementById('kpi-dealer-amount').textContent = (totalAmount / 10000).toFixed(1) + '万';
+  document.getElementById('kpi-avg-order').textContent = uniqueOrders > 0 ? (totalAmount / uniqueOrders / 10000).toFixed(1) + '万' : '--';
+}
+
+// ==================== CHARTS ====================
+const COLORS = ['#3b82f6','#22c55e','#f59e0b','#ef4444','#8b5cf6','#14b8a6','#ec4899','#f97316','#06b6d4','#84cc16','#6366f1','#e11d48'];
+
+function destroyAll() { Object.values(charts).forEach(c => c?.destroy()); charts = {}; }
+
+function renderAllCharts() {
+  destroyAll();
+  renderMonthlyTrend();
+  renderTopSales();
+  renderCountryPie();
+  renderDeptBar();
+  renderOrderTrend();
+  renderDealerTable();
+  renderProductL3();
+  renderDealerMonthly();
+  renderFactoryChart();
+}
+
+function groupByMonth(data) {
+  const map = {};
+  data.forEach(r => {
+    const d = (r['审核日期'] || r['check_date'] || '').substring(0, 7);
+    if (!d) return;
+    map[d] = (map[d] || 0) + (parseFloat(r['折前不含税订单总金额(CNY)']) || 0);
+  });
+  return Object.entries(map).sort();
+}
+
+function renderMonthlyTrend() {
+  const baseYear = parseInt(document.getElementById('filterYear').value) || new Date().getFullYear();
+  const lastYear = baseYear - 1;
+  
+  // Base year follows ALL filters
+  const curData = groupByMonth(filteredData).filter(d => d[0].startsWith(String(baseYear)));
+  // Prior year: use rawData with non-year filters, then take lastYear portion
+  const priorBase = getFilteredRawExYear();
+  const priorData = groupByMonth(priorBase).filter(d => d[0].startsWith(String(lastYear)));
+  
+  const labels = curData.map(d => d[0]);
+  const curValues = curData.map(d => d[1] / 10000);
+  const priorValues = priorData.map(d => d[1] / 10000);
+  
+  charts.monthly = new Chart(document.getElementById('chartMonthly'), {
+    type: 'line',
+    data: { labels, datasets: [
+      { label: String(lastYear) + '年', data: priorValues, borderColor: COLORS[1], tension: 0.3, fill: false },
+      { label: String(baseYear) + '年', data: curValues, borderColor: COLORS[2], tension: 0.3, fill: false }
+    ].filter(d => d.data.length > 0) },
+    options: { responsive: true, plugins: { legend: { labels: { color: '#94a3b8' } } }, scales: { x: { ticks: { color: '#94a3b8' } }, y: { ticks: { color: '#94a3b8', callback: v => v + '万' } } } }
+  });
+}
+
+function renderTopSales() {
+  const map = {};
+  filteredData.forEach(r => {
+    const name = r['业务员姓名'] || '未知';
+    map[name] = (map[name] || 0) + (parseFloat(r['折前不含税订单总金额(CNY)']) || 0);
+  });
+  const sorted = Object.entries(map).sort((a,b) => b[1] - a[1]).slice(0, 10);
+  charts.topSales = new Chart(document.getElementById('chartTopSales'), {
+    type: 'bar',
+    data: { labels: sorted.map(s => s[0]), datasets: [{ label: '销售额(万)', data: sorted.map(s => s[1]/10000), backgroundColor: COLORS.slice(0,10) }] },
+    options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#94a3b8', callback: v => v+'万' } }, y: { ticks: { color: '#94a3b8' } } } }
+  });
+}
+
+function renderCountryPie() {
+  const map = {};
+  filteredData.forEach(r => { const c = r['国家'] || '未知'; map[c] = (map[c] || 0) + (parseFloat(r['折前不含税订单总金额(CNY)']) || 0); });
+  const sorted = Object.entries(map).sort((a,b) => b[1] - a[1]);
+  charts.country = new Chart(document.getElementById('chartCountry'), {
+    type: 'doughnut',
+    data: { labels: sorted.map(s => s[0]), datasets: [{ data: sorted.map(s => s[1]), backgroundColor: COLORS }] },
+    options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', padding: 12 } } } }
+  });
+}
+
+function renderDeptBar() {
+  const map = {};
+  filteredData.forEach(r => { const d = r['部门'] || r['销售体系'] || '未知'; map[d] = (map[d] || 0) + (parseFloat(r['折前不含税订单总金额(CNY)']) || 0); });
+  const sorted = Object.entries(map).sort((a,b) => b[1] - a[1]).slice(0, 10);
+  charts.dept = new Chart(document.getElementById('chartDept'), {
+    type: 'bar',
+    data: { labels: sorted.map(s => s[0]), datasets: [{ label: '销售额(万)', data: sorted.map(s => s[1]/10000), backgroundColor: COLORS.slice(4) }] },
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#94a3b8' } }, y: { ticks: { color: '#94a3b8', callback: v => v+'万' } } } }
+  });
+}
+
+function renderOrderTrend() {
+  const map = {};
+  filteredData.forEach(r => {
+    const d = (r['审核日期'] || r['check_date'] || '').substring(0, 7);
+    if (!d) return;
+    map[d] = (map[d] || 0) + 1;
+  });
+  const data = Object.entries(map).sort();
+  charts.orderTrend = new Chart(document.getElementById('chartOrderTrend'), {
+    type: 'line',
+    data: { labels: data.map(d => d[0]), datasets: [{ label: '订单数', data: data.map(d => d[1]), borderColor: COLORS[4], backgroundColor: COLORS[4]+'30', fill: true, tension: 0.3 }] },
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#94a3b8' } }, y: { ticks: { color: '#94a3b8' } } } }
+  });
+}
+
+function renderTopDealers() { /* removed */ }
+
+let selectedDealer = null;
+
+function getDealerName(r) {
+  // Use 经销商 if not empty, otherwise fallback to 客户名称
+  return (r['经销商'] && r['经销商'].trim()) ? r['经销商'].trim() : (r['客户名称'] || '未知');
+}
+
+function renderDealerTable() {
+  const currentYear = new Date().getFullYear();
+  const years = [String(currentYear-2), String(currentYear-1), String(currentYear)];
+  
+  // Step 1: Get TOP 10 dealer names from filteredData
+  const rankMap = {};
+  filteredData.forEach(r => {
+    const d = getDealerName(r);
+    rankMap[d] = (rankMap[d] || 0) + (parseFloat(r['折前不含税订单总金额(CNY)']) || 0);
+  });
+  const topDealers = new Set(Object.entries(rankMap).sort((a,b) => b[1] - a[1]).slice(0, 10).map(e => e[0]));
+  
+  // Step 2: Build 3-year amounts from rawData for those dealers
+  const map = {};
+  topDealers.forEach(d => { map[d] = { name: d, total: 0 }; years.forEach(y => map[d][y] = 0); });
+  rawData.forEach(r => {
+    const d = getDealerName(r);
+    if (!topDealers.has(d)) return;
+    const y = (r['审核日期']||'').substring(0,4);
+    const amt = parseFloat(r['折前不含税订单总金额(CNY)']) || 0;
+    map[d].total += amt;
+    if (map[d][y] !== undefined) map[d][y] += amt;
+  });
+  const sorted = Object.values(map).sort((a,b) => b.total - a.total);
+  
+  let html = '<table style="width:100%;font-size:12px;border-collapse:collapse;"><thead><tr style="color:var(--text2);border-bottom:1px solid var(--border)">';
+  html += `<th style="text-align:left;padding:8px">客户</th>${years.map(y => `<th>${y}</th>`).join('')}<th>合计(万)</th></tr></thead><tbody>`;
+  sorted.forEach(r => {
+    const sel = selectedDealer === r.name ? 'background:var(--accent);color:#fff;' : 'cursor:pointer;';
+    html += `<tr class="dealer-row" data-dealer="${r.name.replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/&/g,'&amp;')}" style="border-bottom:1px solid var(--border);${sel}"><td style="padding:6px">${r.name}</td>`;
+    years.forEach(y => html += `<td style="text-align:right;padding:6px">${(r[y]/10000).toFixed(1)}</td>`);
+    html += `<td style="text-align:right;padding:6px;font-weight:600;color:${selectedDealer===r.name?'#fff':'var(--accent)'}">${(r.total/10000).toFixed(1)}</td></tr>`;
+  });
+  html += '</tbody></table>';
+  document.getElementById('dealerTable').innerHTML = html;
+  document.querySelectorAll('.dealer-row').forEach(el => {
+    el.onclick = () => {
+      const name = el.getAttribute('data-dealer');
+      // Toggle selection
+      if (selectedDealer === name) {
+        selectedDealer = null;
+      } else {
+        selectedDealer = name;
+      }
+      // Destroy and rebuild all dealer charts
+      if (charts.productL3) charts.productL3.destroy();
+      if (charts.dealerMonthly) charts.dealerMonthly.destroy();
+      if (charts.factory) charts.factory.destroy();
+      renderDealerTable();
+      renderProductL3();
+      renderDealerMonthly();
+      renderFactoryChart();
+    };
+  });
+}
+
+function getFilteredRawExYear() {
+  // rawData with all filters EXCEPT year
+  const months = getMulti('filterMonth');
+  const dept = document.getElementById('filterDept').value;
+  const sales = document.getElementById('filterSales').value;
+  const country = document.getElementById('filterCountry').value;
+  return rawData.filter(r => {
+    const d = r['审核日期'] || r['check_date'] || '';
+    const m = d.substring(5, 7);
+    if (months.length > 0 && !months.includes(m)) return false;
+    if (dept && (r['部门'] || '') !== dept) return false;
+    if (sales && (r['业务员姓名'] || '') !== sales) return false;
+    if (country && (r['国家'] || '') !== country) return false;
+    return true;
+  });
+}
+
+function renderProductL3() {
+  const currentYear = new Date().getFullYear();
+  const years = [String(currentYear-2), String(currentYear-1), String(currentYear)];
+  const baseData = getFilteredRawExYear();
+  const data = selectedDealer ? baseData.filter(r => getDealerName(r) === selectedDealer) : baseData;
+  document.getElementById('l3ChartTitle').textContent = selectedDealer ? `📦 客户：${selectedDealer} · L3分类` : '📦 客户产品销售额分布（L3分类）';
+  
+  // Build map: { L3: { year: amount } }
+  const map = {};
+  data.forEach(r => {
+    const l3 = r['L3'] || '未知';
+    const y = (r['审核日期']||'').substring(0,4);
+    if (!years.includes(y)) return;
+    if (!map[l3]) map[l3] = {};
+    map[l3][y] = (map[l3][y] || 0) + (parseFloat(r['折前不含税订单总金额(CNY)']) || 0);
+  });
+  
+  // Get top L3s by total
+  const ranked = Object.entries(map).map(([l3, ys]) => {
+    const total = years.reduce((s, y) => s + (ys[y] || 0), 0);
+    return { l3, ys, total };
+  }).sort((a, b) => b.total - a.total).slice(0, 12);
+  
+  const labels = ranked.map(r => r.l3);
+  const datasets = years.map((y, i) => ({
+    label: y + '年',
+    data: ranked.map(r => (r.ys[y] || 0) / 10000),
+    backgroundColor: COLORS[i + 1],
+    borderColor: COLORS[i + 1],
+    borderWidth: 0
+  }));
+  
+  charts.productL3 = new Chart(document.getElementById('chartProductL3'), {
+    type: 'bar',
+    data: { labels, datasets },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      plugins: { legend: { labels: { color: '#94a3b8' } } },
+      scales: {
+        x: { stacked: false, ticks: { color: '#94a3b8', callback: v => v + '万' } },
+        y: { ticks: { color: '#94a3b8' } }
+      }
+    }
+  });
+
+  // Generate L3 product trend summary and alerts
+  const last = String(currentYear - 1), cur = String(currentYear), prev = String(currentYear - 2);
+  let rising = [], falling = [], steady = [], newEmerging = [], disappeared = [];
+  ranked.forEach(r => {
+    const vCur = r.ys[cur] || 0, vLast = r.ys[last] || 0, vPrev = r.ys[prev] || 0;
+    if (vPrev === 0 && vCur > 0) newEmerging.push(r);
+    else if (vCur === 0 && (vPrev > 0 || vLast > 0)) disappeared.push(r);
+    else if (vLast > 0) {
+      const growth = (vCur - vLast) / vLast;
+      if (growth > 0.2) rising.push({ l3: r.l3, growth, vCur, vLast });
+      else if (growth < -0.2) falling.push({ l3: r.l3, growth, vCur, vLast });
+      else steady.push({ l3: r.l3, growth, vCur, vLast });
+    }
+  });
+  rising.sort((a, b) => b.growth - a.growth);
+  falling.sort((a, b) => a.growth - b.growth);
+  newEmerging.sort((a, b) => (b.ys[cur] || 0) - (a.ys[cur] || 0));
+  
+  let html = '<div style="color:var(--text);font-weight:600;margin-bottom:6px;font-size:12px;">📊 年度变化分析</div>';
+  if (ranked.length > 0) {
+    html += `<div style="color:var(--text2);margin-bottom:8px;">共分析 <span style="color:var(--accent);font-weight:600;">${ranked.length}</span> 个L3分类；本年（${cur}）vs 去年（${last}）同比变化。</div>`;
+  }
+  if (rising.length > 0) {
+    html += `<div style="margin-bottom:6px;color:var(--green);">▲ 增长最快：</div>`;
+    rising.slice(0, 3).forEach(r => {
+      html += `<div style="margin-left:8px;margin-bottom:3px;color:var(--text);">• <b>${r.l3}</b> <span style="color:var(--green);">+${(r.growth * 100).toFixed(0)}%</span></div>`;
+    });
+    html += `<div style="margin-bottom:8px;"></div>`;
+  }
+  if (falling.length > 0) {
+    html += `<div style="margin-bottom:6px;color:var(--red);">▼ 下滑显著：</div>`;
+    falling.slice(0, 3).forEach(r => {
+      html += `<div style="margin-left:8px;margin-bottom:3px;color:var(--text);">• <b>${r.l3}</b> <span style="color:var(--red);">${(r.growth * 100).toFixed(0)}%</span></div>`;
+    });
+    html += `<div style="margin-bottom:8px;"></div>`;
+  }
+  if (newEmerging.length > 0) {
+    html += `<div style="margin-bottom:6px;color:var(--orange);">✦ 新增产品：</div>`;
+    newEmerging.slice(0, 2).forEach(r => {
+      html += `<div style="margin-left:8px;margin-bottom:3px;color:var(--text);">• <b>${r.l3}</b></div>`;
+    });
+    html += `<div style="margin-bottom:8px;"></div>`;
+  }
+  
+  // Generate 1-3 alerts
+  const alerts = [];
+  if (falling.length > 0) {
+    const top = falling[0];
+    alerts.push({ type: 'danger', text: `⚠️ <b>${top.l3}</b>同比下滑${Math.abs(top.growth * 100).toFixed(0)}%，需关注市场需求变化` });
+  }
+  if (rising.length > 0 && rising[0].growth > 1) {
+    const top = rising[0];
+    alerts.push({ type: 'success', text: `✓ <b>${top.l3}</b>销量同比翻倍增长，建议加大备货` });
+  }
+  if (newEmerging.length >= 2) {
+    alerts.push({ type: 'info', text: `ℹ️ 本年新增${newEmerging.length}个L3分类，市场拓展中` });
+  } else if (disappeared.length >= 2) {
+    alerts.push({ type: 'danger', text: `⚠️ ${disappeared.length}个产品本年无销售，需清理` });
+  } else if (rising.length === 0 && falling.length === 0 && ranked.length > 3) {
+    alerts.push({ type: 'info', text: `ℹ️ 主要产品销售基本持平，无显著变化` });
+  }
+  
+  if (alerts.length > 0) {
+    html += '<div style="color:var(--text);font-weight:600;margin:8px 0 6px;font-size:12px;">🔔 预警提示</div>';
+    alerts.slice(0, 3).forEach(a => {
+      const bg = a.type === 'danger' ? 'rgba(239,68,68,0.15)' : a.type === 'success' ? 'rgba(34,197,94,0.15)' : 'rgba(245,158,11,0.15)';
+      const border = a.type === 'danger' ? '#ef4444' : a.type === 'success' ? '#22c55e' : '#f59e0b';
+      html += `<div style="background:${bg};border-left:3px solid ${border};padding:6px 8px;margin-bottom:4px;border-radius:4px;color:var(--text);font-size:11px;">${a.text}</div>`;
+    });
+  }
+  
+  document.getElementById('l3Summary').innerHTML = html;
+}
+
+function renderDealerMonthly() {
+  const data = selectedDealer ? filteredData.filter(r => r['经销商'] === selectedDealer) : filteredData;
+  document.getElementById('dealerMonthlyTitle').textContent = selectedDealer ? `📅 客户：${selectedDealer} · 每月业绩` : '📅 客户每月业绩';
+  const map = {};
+  data.forEach(r => {
+    const m = (r['审核日期'] || '').substring(0, 7);
+    if (!m) return;
+    map[m] = (map[m] || 0) + (parseFloat(r['折前不含税订单总金额(CNY)']) || 0);
+  });
+  const sorted = Object.entries(map).sort();
+  charts.dealerMonthly = new Chart(document.getElementById('chartDealerMonthly'), {
+    type: 'bar',
+    data: { labels: sorted.map(s => s[0]), datasets: [{ label: '销售额(万)', data: sorted.map(s => s[1]/10000), backgroundColor: COLORS[2] }] },
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#94a3b8', maxTicksLimit: 12 } }, y: { ticks: { color: '#94a3b8', callback: v => v+'万' } } } }
+  });
+}
+
+function renderFactoryChart() {
+  const data = selectedDealer ? filteredData.filter(r => r['经销商'] === selectedDealer) : filteredData;
+  document.getElementById('factoryChartTitle').textContent = selectedDealer ? `🏭 客户：${selectedDealer} · 工厂分布` : '🏭 按工厂销售额分布';
+  const map = {};
+  data.forEach(r => { const f = r['工厂'] || '未知'; map[f] = (map[f] || 0) + (parseFloat(r['折前不含税订单总金额(CNY)']) || 0); });
+  const sorted = Object.entries(map).sort((a,b) => b[1] - a[1]);
+  charts.factory = new Chart(document.getElementById('chartFactory'), {
+    type: 'doughnut',
+    data: { labels: sorted.map(s => s[0]), datasets: [{ data: sorted.map(s => s[1]), backgroundColor: COLORS }] },
+    options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8' } } } }
+  });
+}
+
+// ==================== TAB SWITCHING ====================
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.querySelector(`.tab:nth-child(${tab === 'overview' ? 1 : 2})`).classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+  setTimeout(() => { Object.values(charts).forEach(c => c?.resize()); }, 100);
+}
+
+// ==================== DEMO DATA ====================
+function generateDemoData() {
+  const countries = ['越南','泰国','印度尼西亚','菲律宾','新加坡','马来西亚','缅甸','柬埔寨'];
+  const depts = ['越泰','马来','菲律宾','新加坡','印尼'];
+  const salesPeople = ['Duy Manh Nguyen','陈继红','李志明','张伟','王芳','刘洋','赵敏','孙磊','周杰','吴婷'];
+  const dealers = ['KOVITECH JOINT STOCK COMPANY','PT DAIKIN INDONESIA','SINGAPORE AIRCON','MALAYSIA COOLING','THAI REFRIGERATION','VIETNAM HVAC SOLUTIONS','PHILIPPINES AIR TECH','MYANMAR COOLING SYSTEMS','CAMBODIA AIR SOLUTIONS','INDONESIA TECH'];
+  const l3s = ['商用水机','低温热泵','商用空气能','家用空调','工业冷冻','新风系统','热回收','变频多联机'];
+  const factories = ['南京商用工厂','南京主机工厂','南京末端工厂','广州工厂','天津工厂','马来工厂'];
+  const products = ['控制配件箱','风冷涡旋式变频机组','模块化风冷机组','风机盘管','组合式空调箱','螺杆式冷水机组','离心式冷水机组'];
+  
+  const data = [];
+  for (let i = 0; i < 500; i++) {
+    const year = 2023 + Math.floor(Math.random() * 4);
+    const month = String(Math.floor(Math.random() * 12) + 1).padStart(2, '0');
+    const day = String(Math.floor(Math.random() * 28) + 1).padStart(2, '0');
+    const amount = Math.random() * 500000 + 10000;
+    const qty = Math.floor(Math.random() * 50) + 1;
+    
+    data.push({
+      '审核日期': `${year}-${month}-${day} 00:00:00`,
+      '订单日期': `${year}-${month}-${day} 00:00:00`,
+      '国家': countries[Math.floor(Math.random() * countries.length)],
+      '新部门': depts[Math.floor(Math.random() * depts.length)],
+      '业务员姓名': salesPeople[Math.floor(Math.random() * salesPeople.length)],
+      '经销商': dealers[Math.floor(Math.random() * dealers.length)],
+      'L3': l3s[Math.floor(Math.random() * l3s.length)],
+      '工厂': factories[Math.floor(Math.random() * factories.length)],
+      '产品名称': products[Math.floor(Math.random() * products.length)],
+      '订单编号': 'ORD' + year + month + String(i).padStart(4, '0'),
+      '合同号': 'CT' + year + String(i).padStart(4, '0'),
+      '折前不含税订单总金额(CNY)': Math.round(amount * 100) / 100,
+      '下单数量': qty,
+      '区': '亚太一区',
+      '订单状态': '已审核',
+      '贸易类型': '海外',
+      '币种': Math.random() > 0.5 ? 'USD' : 'CNY',
+    });
+  }
+  return data;
+}
+
+// ==================== INIT ====================
+buildMonthDropdown();
+loadData();
+</script>
+</body>
+</html>
