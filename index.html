@@ -154,7 +154,15 @@ async function loadData() {
   try {
     const resp = await fetch('data.json?v=' + Date.now());
     if (!resp.ok) throw new Error('HTTP ' + resp.status);
-    rawData = await resp.json();
+    let buf = await resp.arrayBuffer();
+    // Auto-detect gzip (magic bytes 0x1f 0x8b)
+    if (buf.byteLength > 2 && new Uint8Array(buf)[0] === 0x1f && new Uint8Array(buf)[1] === 0x8b) {
+      const ds = new DecompressionStream('gzip');
+      const stream = new Response(buf).body.pipeThrough(ds);
+      buf = await new Response(stream).arrayBuffer();
+    }
+    const text = new TextDecoder().decode(buf);
+    rawData = JSON.parse(text);
     console.log('Loaded', rawData.length, 'records from data.json');
   } catch(e) {
     console.warn('Loading from data.json failed:', e.message);
