@@ -151,25 +151,29 @@ let charts = {};
 // ==================== DATA LOADING ====================
 async function loadData() {
   document.querySelector('.loading')?.remove();
-  try {
-    const resp = await fetch('data.json?v=' + Date.now());
-    if (!resp.ok) throw new Error('HTTP ' + resp.status);
-    let buf = await resp.arrayBuffer();
-    // Auto-detect gzip (magic bytes 0x1f 0x8b)
-    if (buf.byteLength > 2 && new Uint8Array(buf)[0] === 0x1f && new Uint8Array(buf)[1] === 0x8b) {
-      const ds = new DecompressionStream('gzip');
-      const stream = new Response(buf).body.pipeThrough(ds);
-      buf = await new Response(stream).arrayBuffer();
-    }
-    const text = new TextDecoder().decode(buf);
-    rawData = JSON.parse(text);
-    console.log('Loaded', rawData.length, 'records from data.json');
-  } catch(e) {
-    console.warn('Loading from data.json failed:', e.message);
+  const urls = [
+    'data.json?v=' + Date.now(),
+    'https://ece4a8627be34eda95724ae727012ee2.sh4.agentos-app.net/data.json?v=' + Date.now()
+  ];
+  let lastErr = null, loaded = false;
+  for (const url of urls) {
+    try {
+      const resp = await fetch(url);
+      if (!resp.ok) continue;
+      const text = await resp.text();
+      if (text.trim().startsWith('[') || text.trim().startsWith('{')) {
+        rawData = JSON.parse(text);
+        console.log('Loaded', rawData.length, 'records from', url.includes('agentos') ? 'CloudStudio' : 'local');
+        loaded = true;
+        break;
+      }
+    } catch(e) { lastErr = e; }
+  }
+  if (!loaded) {
+    console.warn('Data load failed:', lastErr?.message);
     rawData = generateDemoData();
   }
   processData();
-  // Failsafe: re-apply filters after a short delay to ensure DOM is ready
   setTimeout(() => { applyFilters(); }, 500);
 }
 
