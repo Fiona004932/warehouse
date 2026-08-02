@@ -496,11 +496,11 @@ function renderProductL3() {
     map[l3][y] = (map[l3][y] || 0) + (parseFloat(r['折前不含税订单总金额(CNY)']) || 0);
   });
   
-  // Get top L3s by total
+  // Filter out categories under 10万
   const ranked = Object.entries(map).map(([l3, ys]) => {
     const total = years.reduce((s, y) => s + (ys[y] || 0), 0);
     return { l3, ys, total };
-  }).sort((a, b) => b.total - a.total).slice(0, 12);
+  }).filter(r => r.total >= 100000).sort((a, b) => b.total - a.total).slice(0, 12);
   
   const labels = ranked.map(r => r.l3);
   const datasets = years.map((y, i) => ({
