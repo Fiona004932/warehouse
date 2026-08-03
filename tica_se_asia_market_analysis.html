@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>天加环境科技 · 东南亚 HVAC 市场战略分析报告 2026</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0f1117;
+    --card: #1a1d27;
+    --border: #2a2d3a;
+    --text: #e1e4ed;
+    --muted: #888b97;
+    --accent: #4f8cff;
+    --accent2: #3dd68c;
+    --warn: #f5a623;
+    --danger: #e5484d;
+    --tica: #00a870;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif; line-height:1.7; }
+  .container { max-width:1200px; margin:0 auto; padding:40px 24px; }
+  
+  .hero { text-align:center; padding:60px 0 40px; border-bottom:1px solid var(--border); margin-bottom:40px; }
+  .hero h1 { font-size:2.4em; font-weight:700; background:linear-gradient(135deg,var(--accent),var(--tica)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:8px; }
+  .hero .subtitle { color:var(--muted); font-size:1.1em; }
+  .hero .meta { display:flex; gap:24px; justify-content:center; margin-top:16px; color:var(--muted); font-size:0.9em; flex-wrap:wrap; }
+  .hero .meta span { background:var(--card); padding:4px 14px; border-radius:20px; border:1px solid var(--border); }
+
+  .section { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:32px; margin-bottom:28px; }
+  .section h2 { font-size:1.5em; margin-bottom:20px; padding-bottom:12px; border-bottom:2px solid var(--accent); display:flex; align-items:center; gap:10px; }
+  .section h3 { color:var(--accent2); font-size:1.15em; margin:24px 0 12px; }
+  .section h4 { color:var(--text); font-size:1em; margin:18px 0 8px; }
+
+  .kpi-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; margin-bottom:24px; }
+  .kpi-card { background:linear-gradient(135deg,#1e2130,#1a1d27); border:1px solid var(--border); border-radius:10px; padding:20px; text-align:center; }
+  .kpi-card .value { font-size:2em; font-weight:700; color:var(--accent); }
+  .kpi-card .value.green { color:var(--accent2); }
+  .kpi-card .label { color:var(--muted); font-size:0.85em; margin-top:4px; }
+
+  table { width:100%; border-collapse:collapse; margin:16px 0; font-size:0.92em; }
+  th { background:var(--border); padding:10px 14px; text-align:left; font-weight:600; }
+  td { padding:10px 14px; border-bottom:1px solid var(--border); }
+  tr:hover td { background:rgba(79,140,255,0.05); }
+
+  .tag { display:inline-block; padding:2px 10px; border-radius:12px; font-size:0.78em; font-weight:600; }
+  .tag.blue { background:rgba(79,140,255,0.15); color:var(--accent); }
+  .tag.green { background:rgba(61,214,140,0.15); color:var(--accent2); }
+  .tag.orange { background:rgba(245,166,35,0.15); color:var(--warn); }
+  .tag.red { background:rgba(229,72,77,0.15); color:var(--danger); }
+
+  .swot-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .swot-box { border-radius:10px; padding:20px; }
+  .swot-box.s { background:rgba(61,214,140,0.08); border:1px solid rgba(61,214,140,0.25); }
+  .swot-box.w { background:rgba(245,166,35,0.08); border:1px solid rgba(245,166,35,0.25); }
+  .swot-box.o { background:rgba(79,140,255,0.08); border:1px solid rgba(79,140,255,0.25); }
+  .swot-box.t { background:rgba(229,72,77,0.08); border:1px solid rgba(229,72,77,0.25); }
+  .swot-box h4 { margin-bottom:10px; font-size:1.1em; }
+  .swot-box ul { padding-left:18px; }
+  .swot-box li { margin-bottom:6px; line-height:1.6; }
+
+  .chart-wrap { margin:24px 0; position:relative; height:320px; }
+  .chart-wrap canvas { width:100% !important; }
+
+  .action-card { background:linear-gradient(135deg,rgba(0,168,112,0.08),rgba(79,140,255,0.08)); border:1px solid rgba(0,168,112,0.2); border-radius:10px; padding:20px; margin:16px 0; }
+  .action-card h4 { color:var(--accent2); margin-bottom:8px; }
+  .action-card .priority { font-size:0.8em; padding:2px 8px; border-radius:10px; margin-left:8px; }
+  .action-card .priority.p1 { background:var(--danger); color:#fff; }
+  .action-card .priority.p2 { background:var(--warn); color:#111; }
+  .action-card .priority.p3 { background:var(--accent); color:#fff; }
+
+  .toc { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:32px; }
+  .toc a { color:var(--accent); text-decoration:none; padding:6px 14px; border:1px solid var(--border); border-radius:20px; font-size:0.9em; transition:all 0.2s; }
+  .toc a:hover { background:var(--accent); color:#fff; border-color:var(--accent); }
+
+  .disclaimer { background:rgba(245,166,35,0.08); border:1px solid rgba(245,166,35,0.2); border-radius:8px; padding:16px; margin-top:32px; font-size:0.85em; color:var(--muted); }
+
+  @media (max-width:768px) {
+    .container { padding:20px 16px; }
+    .hero h1 { font-size:1.6em; }
+    .swot-grid { grid-template-columns:1fr; }
+    .kpi-grid { grid-template-columns:1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- HERO -->
+<div class="hero">
+  <h1>天加环境科技 · 东南亚 HVAC 市场战略分析</h1>
+  <p class="subtitle">面向海外东南亚区域销售总监的决策支持报告</p>
+  <div class="meta">
+    <span>报告日期：2026年8月</span>
+    <span>编制：市场分析专家</span>
+    <span>机密 · 仅供内部使用</span>
+    <span>数据截止：2026年Q2</span>
+  </div>
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <a href="#s1">01 执行摘要</a>
+  <a href="#s2">02 天加现状与能力盘点</a>
+  <a href="#s3">03 东南亚市场全景</a>
+  <a href="#s4">04 TAM / SAM / SOM</a>
+  <a href="#s5">05 竞争格局</a>
+  <a href="#s6">06 SWOT 分析</a>
+  <a href="#s7">07 战略建议</a>
+  <a href="#s8">08 行动计划</a>
+</div>
+
+<!-- 01 EXECUTIVE SUMMARY -->
+<div class="section" id="s1">
+  <h2>📊 01 执行摘要</h2>
+
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="value">$21B+</div>
+      <div class="label">2026年东南亚制冷设备市场规模</div>
+    </div>
+    <div class="kpi-card">
+      <div class="value green">11-13%</div>
+      <div class="label">年均复合增长率 (CAGR 2025-2030)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="value">$5.5B+</div>
+      <div class="label">2025年东南亚空调市场专项规模</div>
+    </div>
+    <div class="kpi-card">
+      <div class="value green">¥13亿</div>
+      <div class="label">天加2024年东南亚营收（增速40%+）</div>
+    </div>
+  </div>
+
+  <p style="margin:20px 0;line-height:1.9">
+    东南亚是全球HVAC市场增长最快的区域之一，预计2030年制冷设备市场规模将达 <strong style="color:var(--accent)">~345亿美元</strong>。
+    2025年，天加全系统营收达 <strong style="color:var(--accent2)">172.6亿元人民币</strong>，海外业务增长30.3%，东南亚区域营收约13亿元人民币，增速超40%。
+    天加以<strong>洁净空调、数据中心冷却、磁悬浮冷水机组</strong>三大核心技术为差异化武器，
+    在东南亚大型中央空调、半导体/制药洁净系统、数据中心冷却等细分领域已建立显著竞争优势。
+    当前市场格局中，日系品牌（大金市占率28-37%）主导商业空调，中资品牌（格力、美的、海尔）正通过性价比策略快速渗透。
+    天加凭借差异化的高端技术路线和马来西亚本地化制造基地，具备从<strong>$1.8亿→$5亿+</strong>（3年目标）跨越式增长的坚实基础。
+  </p>
+</div>
+
+<!-- 02 TICA OVERVIEW -->
+<div class="section" id="s2">
+  <h2>🏭 02 天加环境科技：现状与核心能力</h2>
+
+  <h3>2.1 企业概况</h3>
+  <table>
+    <tr><th style="width:160px">指标</th><th>数据</th></tr>
+    <tr><td>成立时间</td><td>1991年（34年历史）</td></tr>
+    <tr><td>2025年全系统营收</td><td><strong>172.6亿元人民币</strong>（海外增长30.3%）</td></tr>
+    <tr><td>2024年东南亚营收</td><td><strong>约13亿元人民币</strong>（增速超40%）</td></tr>
+    <tr><td>全球生产基地</td><td>近40个（南京、天津、广州、成都、吉隆坡 + 大阪/蒙特利尔/米兰研发中心）</td></tr>
+    <tr><td>销服网络</td><td>120+网点，覆盖87个国家和地区</td></tr>
+    <tr><td>研发投入</td><td>超销售收入4.5%，200+实验室（50+国际先进水平）</td></tr>
+    <tr><td>核心技术标签</td><td>洁净空调（中国市场份额40%+）、磁悬浮冷水机组（全球30%）、地热ORC发电</td></tr>
+  </table>
+
+  <h3>2.2 核心品牌矩阵</h3>
+  <table>
+    <tr><th>品牌</th><th>国别</th><th>核心能力</th><th>战略价值</th></tr>
+    <tr>
+      <td><strong>TICA 天加</strong></td><td>中国</td><td>中央空调、洁净系统、数据中心冷却</td><td><span class="tag green">主品牌</span> 中国末端产品市占率16年第一</td>
+    </tr>
+    <tr>
+      <td><strong>SMARDT</strong></td><td>加拿大</td><td>全球磁悬浮冷水机组发明者，装机12,000+台</td><td><span class="tag blue">高端</span> 全球市占率30%，数据中心首选</td>
+    </tr>
+    <tr>
+      <td><strong>EXERGY</strong></td><td>意大利</td><td>全球第二大地热ORC发电装备</td><td><span class="tag green">绿色能源</span> 东南亚地热资源丰富（印尼、菲律宾）</td>
+    </tr>
+    <tr>
+      <td><strong>SEBIGAS</strong></td><td>意大利</td><td>生物质沼气技术（80+项目）</td><td><span class="tag blue">可再生能源</span> 东南亚棕榈油/农业废弃物转化</td>
+    </tr>
+    <tr>
+      <td><strong>KLAS</strong></td><td>土耳其</td><td>工业项目解决方案（2026年并购）</td><td><span class="tag orange">新成员</span> 拓展"中国研发+全球制造+本地服务"模式</td>
+    </tr>
+  </table>
+
+  <h3>2.3 东南亚区域布局</h3>
+  <table>
+    <tr><th>国家</th><th>布局状态</th><th>标志性项目</th></tr>
+    <tr><td><strong>马来西亚</strong></td><td>制造基地（2019年投产）+ 亚太总部</td><td>英飞凌半导体工厂、X-FAB晶圆厂</td></tr>
+    <tr><td><strong>新加坡</strong></td><td>运营中心</td><td>樟宜机场、凯德置地总部大楼、Alexandra Point节能改造</td></tr>
+    <tr><td><strong>越南</strong></td><td>2025年新设办事处（河内）</td><td>工业园区项目推进中</td></tr>
+    <tr><td><strong>印尼</strong></td><td>规划制造基地扩展</td><td>市场开拓阶段</td></tr>
+    <tr><td><strong>泰国</strong></td><td>业务覆盖中</td><td>商业地产与工业制冷机会</td></tr>
+  </table>
+</div>
+
+<!-- 03 MARKET OVERVIEW -->
+<div class="section" id="s3">
+  <h2>🌏 03 东南亚 HVAC 市场全景</h2>
+
+  <h3>3.1 市场规模与增长预测</h3>
+  <div class="chart-wrap"><canvas id="chartMarket"></canvas></div>
+  <p style="color:var(--muted);font-size:0.85em;margin-top:8px;">数据来源：GEP Research 2026, AVI DATA 2025, IIF 2025 | 含商用空调、工业制冷、冷链、数据中心冷却</p>
+
+  <h3>3.2 国别市场细分（商用空调 2025 Q1）</h3>
+  <table>
+    <tr><th>国家</th><th>Q1 2025 规模</th><th>同比增长</th><th>全年预估(2024)</th><th>大金市占率</th><th>中资品牌渗透</th></tr>
+    <tr>
+      <td><strong>🇮🇩 印度尼西亚</strong></td>
+      <td>$2.18亿</td>
+      <td><span class="tag green">+7.2%</span></td>
+      <td>$9.8亿</td>
+      <td>36.9%</td>
+      <td>格力5.2% / 美的3.3%</td>
+    </tr>
+    <tr>
+      <td><strong>🇹🇭 泰国</strong></td>
+      <td>$2.03亿</td>
+      <td><span class="tag orange">-4.9%</span></td>
+      <td>~$9亿</td>
+      <td>33.9%</td>
+      <td>海尔7.4%（#4）</td>
+    </tr>
+    <tr>
+      <td><strong>🇻🇳 越南</strong></td>
+      <td>$1.23亿</td>
+      <td><span class="tag green">+13.9%</span></td>
+      <td>$6.0亿</td>
+      <td>28.5%</td>
+      <td>格力+美的第二梯队</td>
+    </tr>
+    <tr>
+      <td><strong>🇲🇾 马来西亚</strong></td>
+      <td>—</td>
+      <td>—</td>
+      <td>$8.17亿</td>
+      <td>CAGR 6.75%</td>
+      <td>天加基地+本土优势</td>
+    </tr>
+    <tr>
+      <td><strong>🇸🇬 新加坡</strong></td>
+      <td>—</td>
+      <td>—</td>
+      <td>高附加值</td>
+      <td>—</td>
+      <td>天加已进入标杆项目</td>
+    </tr>
+    <tr>
+      <td><strong>🇵🇭 菲律宾</strong></td>
+      <td>—</td>
+      <td>—</td>
+      <td>增长中</td>
+      <td>—</td>
+      <td>待开拓</td>
+    </tr>
+  </table>
+
+  <h3>3.3 核心增长驱动因素</h3>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:16px;">
+    <div style="background:rgba(79,140,255,0.06);border-radius:8px;padding:16px;border-left:3px solid var(--accent);">
+      <strong>🏗️ 城市化与商业地产</strong>
+      <p style="color:var(--muted);margin-top:6px;font-size:0.9em;">曼谷、雅加达、胡志明市等大都市写字楼、购物中心、酒店建设持续活跃，商业地产占空调需求32-38%</p>
+    </div>
+    <div style="background:rgba(61,214,140,0.06);border-radius:8px;padding:16px;border-left:3px solid var(--accent2);">
+      <strong>🏭 制造业外资涌入</strong>
+      <p style="color:var(--muted);margin-top:6px;font-size:0.9em;">越南PMI 51.9，电子/汽车/化工外资建厂潮，制造业占空调需求19-20%</p>
+    </div>
+    <div style="background:rgba(245,166,35,0.06);border-radius:8px;padding:16px;border-left:3px solid var(--warn);">
+      <strong>🖥️ 数据中心建设爆发</strong>
+      <p style="color:var(--muted);margin-top:6px;font-size:0.9em;">2025年数据中心冷却市场$9.2亿→2026年$12.1亿，液冷方案渗透率6%→11%</p>
+    </div>
+    <div style="background:rgba(229,72,77,0.06);border-radius:8px;padding:16px;border-left:3px solid var(--danger);">
+      <strong>❄️ 冷链物流扩张</strong>
+      <p style="color:var(--muted);margin-top:6px;font-size:0.9em;">2025年投资$43.6亿(+21.4%)，越南/印尼冷库容量年增超25%</p>
+    </div>
+  </div>
+
+  <h3>3.4 政策与法规驱动</h3>
+  <table>
+    <tr><th>国家</th><th>关键政策</th><th>生效时间</th><th>对天加的影响</th></tr>
+    <tr>
+      <td>🇸🇬 新加坡</td><td>新设备冷媒GWP≤150</td><td>2027-2028年分阶段</td>
+      <td><span class="tag green">利好</span> SMARDT磁悬浮天然适配低GWP</td>
+    </tr>
+    <tr>
+      <td>🇹🇭 泰国</td><td>新能效标准TIS 2134，R410A进口配额削减30%</td><td>2026年4月</td>
+      <td><span class="tag green">利好</span> 天加高效机房节能80%+碾压同行</td>
+    </tr>
+    <tr>
+      <td>🇲🇾 马来西亚</td><td>新能效星级评级2026-2029，强制COE认证</td><td>2026年1月</td>
+      <td><span class="tag green">优势</span> 本土工厂可快速适配认证</td>
+    </tr>
+    <tr>
+      <td>🇮🇩 印尼</td><td>高GWP制冷剂禁令，2027年新项目禁用</td><td>2027年</td>
+      <td><span class="tag blue">机遇</span> 提前布局R32/R290产品线</td>
+    </tr>
+    <tr>
+      <td>🌏 区域</td><td>基加利修正案HFC削减时间表</td><td>持续推进</td>
+      <td><span class="tag green">战略窗口</span> 技术领先者享受政策红利</td>
+    </tr>
+  </table>
+</div>
+
+<!-- 04 TAM SAM SOM -->
+<div class="section" id="s4">
+  <h2>📐 04 TAM / SAM / SOM 市场测算</h2>
+
+  <h3>4.1 TAM（总可寻址市场）— 天加全品类视角</h3>
+  <p>涵盖天加所有可进入的东南亚HVAC&R细分市场：中央空调、洁净系统、数据中心冷却、工业制冷、地热发电、冷链。</p>
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="value">$21B</div>
+      <div class="label">2026年 TAM（总市场规模）</div>
+    </div>
+    <div class="kpi-card">
+      <div class="value green">$34.5B</div>
+      <div class="label">2030年 TAM（预测值）</div>
+    </div>
+    <div class="kpi-card">
+      <div class="value">11-13%</div>
+      <div class="label">年复合增长率</div>
+    </div>
+  </div>
+
+  <h3>4.2 SAM（可服务市场）— 天加核心能力匹配</h3>
+  <table>
+    <tr><th>细分市场</th><th>2026 SAM 估算</th><th>天加竞争优势</th><th>占比</th></tr>
+    <tr><td>大型中央空调（商用+工业）</td><td>$8.2B</td><td>高效机房技术、磁悬浮主机</td><td>39%</td></tr>
+    <tr><td>洁净空调（半导体/制药/医院）</td><td>$1.8B</td><td>ISO 1级洁净技术，亚洲排名第一</td><td>9%</td></tr>
+    <tr><td>数据中心冷却</td><td>$1.2B</td><td>SMARDT磁悬浮+风墙，全球前三</td><td>6%</td></tr>
+    <tr><td>地热/ORC发电</td><td>$0.8B</td><td>EXERGY全球第二大地热技术</td><td>4%</td></tr>
+    <tr><td>轻型商用空调</td><td>$5.2B</td><td>性价比渗透（待加强）</td><td>25%</td></tr>
+    <tr><td><strong>SAM 合计</strong></td><td><strong>$17.2B</strong></td><td colspan="2">天加可进入的有效市场约$17.2B</td></tr>
+  </table>
+
+  <h3>4.3 SOM（可获取市场）— 3年目标</h3>
+  <p>基于天加当前东南亚营收约¥13亿（约$1.8亿）和40%增速，按照"保守-基准-乐观"三种情景测算：</p>
+  <table>
+    <tr><th>情景</th><th>2026</th><th>2027</th><th>2028</th><th>SOM占比(SAM)</th><th>关键假设</th></tr>
+    <tr>
+      <td><span class="tag green">乐观</span></td>
+      <td>$2.8亿</td><td>$4.1亿</td><td><strong>$5.7亿</strong></td>
+      <td>3.3%</td>
+      <td>越南+印尼办事处全面发力，数据中心订单爆发</td>
+    </tr>
+    <tr>
+      <td><span class="tag blue">基准</span></td>
+      <td>$2.5亿</td><td>$3.5亿</td><td><strong>$4.9亿</strong></td>
+      <td>2.8%</td>
+      <td>保持40%增速，马来西亚+新加坡稳步增长</td>
+    </tr>
+    <tr>
+      <td><span class="tag orange">保守</span></td>
+      <td>$2.2亿</td><td>$2.8亿</td><td>$3.6亿</td>
+      <td>2.1%</td>
+      <td>仅靠现有市场自然增长，无重大突破</td>
+    </tr>
+  </table>
+</div>
+
+<!-- 05 COMPETITIVE -->
+<div class="section" id="s5">
+  <h2>⚔️ 05 竞争格局深度分析</h2>
+
+  <h3>5.1 主要竞争者市场地位（商用空调 2025 Q1）</h3>
+  <div class="chart-wrap"><canvas id="chartCompetition"></canvas></div>
+
+  <h3>5.2 竞争策略对比</h3>
+  <table>
+    <tr><th>竞争者</th><th>策略定位</th><th>核心优势</th><th>薄弱环节</th><th>天加应对策略</th></tr>
+    <tr>
+      <td><strong>🇯🇵 大金</strong></td>
+      <td>全品类霸主，VRF技术领先</td>
+      <td>渠道87家核心承包商+152家代理商，本地化生产，品牌溢价</td>
+      <td>高端定价限制下沉市场，洁净/数据中心非核心</td>
+      <td><span class="tag green">差异化竞争</span> 在洁净、数据中心等大金非优势领域突破</td>
+    </tr>
+    <tr>
+      <td><strong>🇺🇸 开利/特灵/约克</strong></td>
+      <td>水机市场主导</td>
+      <td>泰国水机前四占比87.3%，品牌历史，节能认证</td>
+      <td>价格高，轻商领域弱势</td>
+      <td><span class="tag blue">技术对标</span> SMARDT能效比传统机组高20-50%</td>
+    </tr>
+    <tr>
+      <td><strong>🇨🇳 格力</strong></td>
+      <td>性价比+轻商突破</td>
+      <td>价格低15-20%，越南#2、印尼#4</td>
+      <td>品牌溢价不足，高端市场缺位</td>
+      <td><span class="tag orange">市场区隔</span> 不与格力打价格战，锚定中高端</td>
+    </tr>
+    <tr>
+      <td><strong>🇨🇳 美的</strong></td>
+      <td>轻商为主+大机渗透</td>
+      <td>越南中部产业园政策突破，渠道下沉</td>
+      <td>售后响应慢(48h vs 大金24h)，越南工厂落后</td>
+      <td><span class="tag orange">服务碾压</span> 马来西亚工厂就近服务，缩短响应时间</td>
+    </tr>
+    <tr>
+      <td><strong>🇨🇳 海尔</strong></td>
+      <td>泰国有突破</td>
+      <td>泰国#4（7.4%），Chonburi新工厂</td>
+      <td>其他国家存在感弱</td>
+      <td><span class="tag blue">差异化</span> 天加在马来西亚已有制造优势</td>
+    </tr>
+    <tr>
+      <td><strong>🇰🇷 LG</strong></td>
+      <td>多元竞争</td>
+      <td>印尼西爪哇新工厂，泰国#3</td>
+      <td>品牌定位中端</td>
+      <td>天加高端定位形成差异化</td>
+    </tr>
+  </table>
+
+  <h3>5.3 竞争定位图</h3>
+  <div class="chart-wrap"><canvas id="chartPosition"></canvas></div>
+</div>
+
+<!-- 06 SWOT -->
+<div class="section" id="s6">
+  <h2>🔍 06 SWOT 分析</h2>
+  <div class="swot-grid">
+    <div class="swot-box s">
+      <h4>✅ 优势 Strengths</h4>
+      <ul>
+        <li><strong>核心技术壁垒：</strong>ISO 1级洁净系统、SMARDT磁悬浮（全球30%份额）、ORC地热发电——三大技术难以复制</li>
+        <li><strong>本地化制造：</strong>马来西亚吉隆坡工厂2019年投产，规避关税、缩短交付周期、享受ASEAN自贸区零关税</li>
+        <li><strong>标杆项目背书：</strong>新加坡樟宜机场、英飞凌半导体、X-FAB晶圆厂——顶级客户信任状</li>
+        <li><strong>多品牌矩阵：</strong>TICA + SMARDT + EXERGY + SEBIGAS覆盖暖通全产业链</li>
+        <li><strong>研发实力：</strong>200+实验室、年投入超4.5%营收，远超行业平均</li>
+        <li><strong>绿色技术先发：</strong>高效机房节能80%+、磁悬浮能效比传统机组高20-50%，精准命中东南亚能效升级政策</li>
+      </ul>
+    </div>
+    <div class="swot-box w">
+      <h4>⚠️ 劣势 Weaknesses</h4>
+      <ul>
+        <li><strong>品牌认知度不足：</strong>相比大金（越南28.5%、泰国33.9%），天加在C端和中小B端知名度有限</li>
+        <li><strong>轻商产品线薄弱：</strong>轻型商用空调占市场50-70%，天加在该领域产品力和渠道不足</li>
+        <li><strong>渠道覆盖不足：</strong>与大金152家代理商相比，天加渠道网络仍在建设中</li>
+        <li><strong>售后服务体系：</strong>需扩大工程师团队密度以匹配大金24小时响应标准</li>
+        <li><strong>印尼/泰国/菲律宾本地化程度低：</strong>目前仅越南有办事处，其余国家依赖远程支持</li>
+      </ul>
+    </div>
+    <div class="swot-box o">
+      <h4>🚀 机会 Opportunities</h4>
+      <ul>
+        <li><strong>数据中心爆发：</strong>2026年东南亚数据中心冷却$12.1亿，液冷渗透率翻倍——SMARDT核心战场</li>
+        <li><strong>半导体产业链转移：</strong>马来西亚/越南承接全球芯片产能，洁净空调需求井喷——天加DNA</li>
+        <li><strong>能效政策红利：</strong>泰国、马来西亚、新加坡密集出台高能效/低GWP法规——淘汰低端竞品</li>
+        <li><strong>冷链基础设施：</strong>$43.6亿投资，越南/印尼冷库年增25%——工业制冷新赛道</li>
+        <li><strong>地热能源开发：</strong>印尼（全球第二大地热储量）、菲律宾——EXERGY绝佳应用场景</li>
+        <li><strong>东盟自贸区优势：</strong>马来西亚基地享受区内零关税，辐射6.5亿人口市场</li>
+      </ul>
+    </div>
+    <div class="swot-box t">
+      <h4>⚡ 威胁 Threats</h4>
+      <ul>
+        <li><strong>日系品牌护城河：</strong>大金渠道深耕数十年，"价格管控+项目保护+客户分层"体系成熟</li>
+        <li><strong>中资内卷：</strong>格力、美的、海尔在轻商领域以价格战抢占份额，压低行业利润</li>
+        <li><strong>汇率波动：</strong>人民币/林吉特/印尼盾汇率风险影响出口利润</li>
+        <li><strong>地缘政治：</strong>中美贸易摩擦可能影响东南亚供应链稳定性</li>
+        <li><strong>技术壁垒升级：</strong>各国能效和制冷剂法规快速迭代，需持续高研发投入</li>
+        <li><strong>本土品牌崛起：</strong>越南Casper/Nakagawa在轻商领域已突破外资垄断</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- 07 STRATEGY -->
+<div class="section" id="s7">
+  <h2>🎯 07 战略建议</h2>
+
+  <h3>核心战略：以"技术制高点+本地化交付"双轮驱动，从$1.8亿向$5亿跨越</h3>
+
+  <div class="action-card">
+    <h4>战略一：数据中心冷却——第一增长极 <span class="priority p1">P0 最高优先</span></h4>
+    <p>
+      东南亚数据中心冷却市场2026年达$12.1亿，液冷方案渗透率正从6%跃升至11%。SMARDT磁悬浮冷水机组是全球数据中心首选品牌（服务Google、Equinix、阿里、字节跳动等），
+      能效比传统机组高20-50%，PUE行业最低。<br>
+      <strong>行动：</strong>① 成立东南亚数据中心事业部，以新加坡+马来西亚为双枢纽；② 联合当地IDC运营商（如新加坡STT、马来西亚Bridge Data Centres）建立战略合作；
+      ③ 推动SMARDT液冷方案在热带高温高湿环境的本土化验证。
+    </p>
+  </div>
+
+  <div class="action-card">
+    <h4>战略二：半导体洁净空调——不可替代的护城河 <span class="priority p1">P0 最高优先</span></h4>
+    <p>
+      全球半导体产业链加速向东南亚转移（马来西亚槟城、越南河内/胡志明市），洁净空调需求与芯片投资额线性相关。天加在中国洁净空调市场份额超40%，已服务英飞凌、X-FAB等标杆客户。<br>
+      <strong>行动：</strong>① 以已有标杆项目为跳板，深入马来西亚槟城"东方硅谷"和越南半导体园区；② 与EPC总包商绑定投标；
+      ③ 建立马来西亚洁净系统展示中心，邀请东南亚客户实地参观。
+    </p>
+  </div>
+
+  <div class="action-card">
+    <h4>战略三：轻商市场"借船出海"——规模起量 <span class="priority p2">P1 重要</span></h4>
+    <p>
+      轻型商用空调占东南亚市场50-70%，是最大的单一细分市场。天加目前在该领域存在短板，但可通过与本地经销商合作或OEM/ODM模式快速起量。<br>
+      <strong>行动：</strong>① 在泰国、越南、印尼各签约2-3家头部经销商；② 利用马来西亚工厂产能优势，提供比日系低15-20%但质量对标的产品；
+      ③ 重点突破餐饮零售（价格敏感+量大）和制造业园区（工业房产配套）。
+    </p>
+  </div>
+
+  <div class="action-card">
+    <h4>战略四：地热发电——战略性长期布局 <span class="priority p2">P1 重要</span></h4>
+    <p>
+      印尼拥有全球第二大地热储量（约29GW），菲律宾也是地热大国。EXERGY的ORC技术可利用中低温地热资源发电，与印尼"全球海洋支点"战略高度契合。<br>
+      <strong>行动：</strong>① 与印尼国家电力公司PLN和菲律宾Energy Development Corporation建立联系；
+      ② 参与世界银行/亚开行资助的东南亚地热开发项目投标；③ 考虑在印尼设立EXERGY区域服务中心。
+    </p>
+  </div>
+
+  <div class="action-card">
+    <h4>战略五：冷链——新蓝海突破 <span class="priority p3">P2 常规</span></h4>
+    <p>
+      2025年东南亚冷链投资$43.6亿(+21.4%)，越南/印尼冷库容量年增超25%。食品冷链和医药冷链是增长最快的两个子领域。<br>
+      <strong>行动：</strong>① 依托天加工业制冷产品线，推出针对东南亚热带气候的冷链整体解决方案；
+      ② 与本地冷链物流头部企业（如越南ABA Cooltrans、印尼Linc Group）合作试点。
+    </p>
+  </div>
+</div>
+
+<!-- 08 ACTION PLAN -->
+<div class="section" id="s8">
+  <h2>📋 08 行动计划与里程碑</h2>
+
+  <h3>2026-2028 三年路线图</h3>
+  <table>
+    <tr><th>时间</th><th>里程碑</th><th>关键行动</th><th>预期营收</th></tr>
+    <tr>
+      <td><strong>2026 H2</strong></td>
+      <td>组织建设 + 渠道铺设</td>
+      <td>
+        ① 成立东南亚数据中心事业部（新加坡）<br>
+        ② 泰国、印尼各签约2家核心经销商<br>
+        ③ 马来西亚洁净系统展示中心开业<br>
+        ④ 参与2-3个大型数据中心投标
+      </td>
+      <td>$2.5-2.8亿</td>
+    </tr>
+    <tr>
+      <td><strong>2027</strong></td>
+      <td>规模突破 + 多国落地</td>
+      <td>
+        ① 印尼办事处设立 + 本地仓储<br>
+        ② 数据中心项目首单落地（目标$2000万+）<br>
+        ③ 轻商产品线全面铺开（三国经销商网络）<br>
+        ④ 越南半导体园区拿下3+洁净项目
+      </td>
+      <td>$3.5-4.1亿</td>
+    </tr>
+    <tr>
+      <td><strong>2028</strong></td>
+      <td>行业领导者地位确立</td>
+      <td>
+        ① 东南亚总营收突破$5亿<br>
+        ② 数据中心冷却市场进入前3<br>
+        ③ 半导体洁净空调市占率超15%<br>
+        ④ 印尼/菲律宾地热项目启动<br>
+        ⑤ 评估印尼设厂可行性
+      </td>
+      <td>$4.9-5.7亿</td>
+    </tr>
+  </table>
+
+  <h3>资源需求</h3>
+  <table>
+    <tr><th>类别</th><th>2026 H2</th><th>2027</th><th>2028</th></tr>
+    <tr><td>区域团队人数</td><td>80-100人</td><td>150-180人</td><td>250+人</td></tr>
+    <tr><td>本地仓储/服务点</td><td>3个国家</td><td>5个国家</td><td>6个国家全覆盖</td></tr>
+    <tr><td>经销商网络</td><td>8-10家</td><td>20+家</td><td>30+家</td></tr>
+    <tr><td>年市场投入</td><td>$300-500万</td><td>$800-1200万</td><td>$1500-2000万</td></tr>
+  </table>
+
+  <h3>风险与应对</h3>
+  <table>
+    <tr><th>风险</th><th>概率</th><th>影响</th><th>应对措施</th></tr>
+    <tr><td>大金等日系品牌渠道封锁</td><td><span class="tag orange">中</span></td><td>高</td><td>避开正面交锋，聚焦数据中心/洁净/地热等差异化赛道</td></tr>
+    <tr><td>汇率大幅波动</td><td><span class="tag orange">中</span></td><td>中</td><td>马来西亚本币结算、远期锁汇、多币种定价</td></tr>
+    <tr><td>中资品牌价格战升级</td><td><span class="tag red">高</span></td><td>中</td><td>坚持技术溢价定位，不参与轻商价格战，以TCO（全生命周期成本）说服客户</td></tr>
+    <tr><td>地缘政治风险</td><td><span class="tag orange">中</span></td><td>中</td><td>马来西亚基地规避关税风险，供应链双备份（中国+东南亚）</td></tr>
+    <tr><td>本土人才招聘困难</td><td><span class="tag orange">中</span></td><td>中</td><td>与当地大学合作培养，从中国派遣种子团队+本地化培养</td></tr>
+  </table>
+</div>
+
+<div class="disclaimer">
+  <strong>⚠️ 免责声明</strong><br>
+  本报告基于公开可获得的市场数据和行业研究（数据截止2026年Q2），仅供南京天加环境科技有限公司内部决策参考。
+  报告中的市场规模估算、增长预测和战略建议基于当前已知信息和分析框架，不构成投资建议或业绩承诺。
+  数据来源包括：GEP Research 2026, AVI DATA 2025, Report Prime 2025, IIF 2025, BRG Building Solutions, 东盟家电协会AAFA, 天加官网/新闻稿。
+  实际决策请结合公司最新财务数据、合规要求和风险管理体系综合考量。
+</div>
+
+</div>
+
+<script>
+// Chart 1: Market Size
+new Chart(document.getElementById('chartMarket'), {
+  type:'bar',
+  data:{
+    labels:['2024','2025','2026E','2027E','2028E','2030E'],
+    datasets:[
+      {label:'制冷设备总市场 (亿美元)',data:[167,187.4,210,235,263,345],backgroundColor:'rgba(79,140,255,0.5)',borderColor:'#4f8cff',borderWidth:2},
+      {label:'空调市场专项 (亿美元)',data:[48,55,62,70,79,103],backgroundColor:'rgba(0,168,112,0.5)',borderColor:'#00a870',borderWidth:2}
+    ]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{labels:{color:'#e1e4ed'}}},
+    scales:{
+      x:{ticks:{color:'#888b97'},grid:{color:'#2a2d3a'}},
+      y:{ticks:{color:'#888b97',callback:v=>'$'+v+'B'},grid:{color:'#2a2d3a'}}
+    }
+  }
+});
+
+// Chart 2: Competition
+new Chart(document.getElementById('chartCompetition'), {
+  type:'bar',
+  data:{
+    labels:['越南','泰国','印尼'],
+    datasets:[
+      {label:'大金',data:[28.5,33.9,36.9],backgroundColor:'rgba(79,140,255,0.7)'},
+      {label:'开利',data:[5,24.2,10],backgroundColor:'rgba(229,72,77,0.7)'},
+      {label:'LG',data:[6.5,9.6,9.7],backgroundColor:'rgba(245,166,35,0.7)'},
+      {label:'格力',data:[7.2,3,5.2],backgroundColor:'rgba(61,214,140,0.7)'},
+      {label:'海尔',data:[3,7.4,2],backgroundColor:'rgba(168,130,255,0.7)'},
+      {label:'美的',data:[5.5,2.5,3.3],backgroundColor:'rgba(255,130,180,0.7)'}
+    ]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{labels:{color:'#e1e4ed'}}},
+    scales:{
+      x:{ticks:{color:'#888b97'},grid:{color:'#2a2d3a'}},
+      y:{ticks:{color:'#888b97',callback:v=>v+'%'},grid:{color:'#2a2d3a'},max:45}
+    }
+  }
+});
+
+// Chart 3: Positioning Map (Bubble)
+new Chart(document.getElementById('chartPosition'), {
+  type:'bubble',
+  data:{
+    datasets:[
+      {label:'大金',data:[{x:85,y:90,r:28}],backgroundColor:'rgba(79,140,255,0.6)'},
+      {label:'开利/特灵',data:[{x:80,y:80,r:22}],backgroundColor:'rgba(229,72,77,0.6)'},
+      {label:'格力',data:[{x:50,y:55,r:16}],backgroundColor:'rgba(61,214,140,0.6)'},
+      {label:'美的',data:[{x:45,y:50,r:15}],backgroundColor:'rgba(255,130,180,0.6)'},
+      {label:'海尔',data:[{x:40,y:48,r:12}],backgroundColor:'rgba(168,130,255,0.6)'},
+      {label:'LG',data:[{x:60,y:65,r:18}],backgroundColor:'rgba(245,166,35,0.6)'},
+      {label:'天加 ★',data:[{x:70,y:70,r:22}],backgroundColor:'rgba(0,168,112,0.9)',borderColor:'#00a870',borderWidth:3}
+    ]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{
+      legend:{labels:{color:'#e1e4ed'}},
+      tooltip:{callbacks:{label:ctx=>ctx.dataset.label}}
+    },
+    scales:{
+      x:{title:{text:'品牌认知度 →',color:'#888b97',display:true},min:30,max:100,ticks:{color:'#888b97'},grid:{color:'#2a2d3a'}},
+      y:{title:{text:'技术壁垒 →',color:'#888b97',display:true},min:30,max:100,ticks:{color:'#888b97'},grid:{color:'#2a2d3a'}}
+    }
+  }
+});
+</script>
+
+</body>
+</html>
