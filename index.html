@@ -354,16 +354,22 @@ function renderMonthlyTrend() {
   const priorBase = getFilteredRawExYear();
   const priorData = groupByMonth(priorBase).filter(d => d[0].startsWith(String(lastYear)));
   
-  const labels = curData.map(d => d[0]);
-  const curValues = curData.map(d => d[1] / 10000);
-  const priorValues = priorData.map(d => d[1] / 10000);
+  // Build month-keyed lookup maps (MM -> amount in 万元)
+  const curMap = {}; curData.forEach(d => { curMap[d[0].substring(5)] = d[1] / 10000; });
+  const priorMap = {}; priorData.forEach(d => { priorMap[d[0].substring(5)] = d[1] / 10000; });
+  
+  // Always show full 12 months
+  const labels = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+  const months = ['01','02','03','04','05','06','07','08','09','10','11','12'];
+  const curValues = months.map(m => curMap[m] || 0);
+  const priorValues = months.map(m => priorMap[m] || 0);
   
   charts.monthly = new Chart(document.getElementById('chartMonthly'), {
     type: 'line',
     data: { labels, datasets: [
       { label: String(lastYear) + '年', data: priorValues, borderColor: COLORS[1], tension: 0.3, fill: false },
       { label: String(baseYear) + '年', data: curValues, borderColor: COLORS[2], tension: 0.3, fill: false }
-    ].filter(d => d.data.length > 0) },
+    ].filter(d => d.data.some(v => v > 0)) },
     options: { responsive: true, plugins: { legend: { labels: { color: '#94a3b8' } } }, scales: { x: { ticks: { color: '#94a3b8' } }, y: { ticks: { color: '#94a3b8', callback: v => v + '万' } } } }
   });
 }
