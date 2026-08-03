@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>天加环境科技 · 东南亚潜在经销商 TOP50 清单</title>
+<style>
+  :root{
+    --bg:#0f1623; --card:#16203250; --panel:#172033; --line:#26344d;
+    --txt:#e8eef7; --muted:#9fb0c9; --accent:#2f81f7; --accent2:#1fdb8a;
+    --warn:#f5a623; --pA:#1fdb8a; --pB:#f5a623; --pC:#7d8aa3;
+    --chip:#1d293f;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:linear-gradient(180deg,#0c1320,#11192a);color:var(--txt);
+    font-family:-apple-system,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.6}
+  .wrap{max-width:1200px;margin:0 auto;padding:32px 22px 60px}
+  header.hero{padding:30px 28px;border-radius:18px;background:linear-gradient(135deg,#13243f,#0f1b30);
+    border:1px solid var(--line);box-shadow:0 12px 40px rgba(0,0,0,.4)}
+  .hero h1{margin:0 0 6px;font-size:26px;letter-spacing:.5px}
+  .hero .sub{color:var(--muted);font-size:14px}
+  .badge{display:inline-block;padding:3px 10px;border-radius:20px;background:var(--chip);
+    color:var(--accent2);font-size:12px;margin-right:8px;border:1px solid var(--line)}
+  h2{font-size:20px;margin:38px 0 14px;padding-left:12px;border-left:4px solid var(--accent)}
+  h3{font-size:15px;color:var(--muted);margin:22px 0 8px;font-weight:600}
+  p.note{color:var(--muted);font-size:13.5px}
+  .grid{display:grid;gap:16px}
+  .g2{grid-template-columns:1fr 1fr}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  @media(max-width:780px){.g2,.g3{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
+  .kpi{font-size:30px;font-weight:700;color:var(--accent)}
+  .kpi.s{font-size:22px}
+  .kpi-label{color:var(--muted);font-size:12.5px;margin-top:2px}
+  table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:6px}
+  th,td{text-align:left;padding:8px 9px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--muted);font-weight:600;background:#13203600}
+  tr:hover td{background:#1b2a44}
+  .pill{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:600}
+  .pa{background:rgba(31,219,138,.15);color:var(--pA);border:1px solid rgba(31,219,138,.4)}
+  .pb{background:rgba(245,166,35,.15);color:var(--pB);border:1px solid rgba(245,166,35,.4)}
+  .pc{background:rgba(125,138,163,.15);color:var(--pc);border:1px solid rgba(125,138,163,.4)}
+  .tp{display:inline-block;padding:1px 7px;border-radius:6px;background:var(--chip);
+    color:var(--txt);font-size:10.5px;margin:1px 3px 1px 0;border:1px solid var(--line)}
+  .tp.d{color:#7fd1ff}.tp.m{color:#ffd27f}.tp.c{color:#b9a6ff}.tp.e{color:#9ff0c5}
+  .flag{color:var(--warn);font-size:11px}
+  .bar-row{display:flex;align-items:center;gap:10px;margin:7px 0;font-size:13px}
+  .bar-row .name{width:96px;color:var(--muted)}
+  .bar{flex:1;height:14px;background:#1b2740;border-radius:8px;overflow:hidden}
+  .bar>span{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#5aa0ff);border-radius:8px}
+  .legend{font-size:12px;color:var(--muted);margin-top:10px}
+  .callout{background:linear-gradient(135deg,#1a2236,#141d30);border:1px solid var(--line);
+    border-left:4px solid var(--accent2);border-radius:12px;padding:16px 18px;margin:16px 0}
+  .callout b{color:var(--accent2)}
+  footer{margin-top:46px;color:var(--muted);font-size:12px;border-top:1px solid var(--line);padding-top:16px}
+  .toc{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .toc a{background:var(--chip);border:1px solid var(--line);padding:6px 12px;border-radius:20px;font-size:12.5px;color:var(--accent)}
+  .cat-head{display:flex;justify-content:space-between;align-items:center;margin-top:26px;
+    padding:10px 14px;background:#15223a;border:1px solid var(--line);border-radius:10px}
+  .cat-head .cnt{color:var(--accent2);font-weight:700}
+  ul.tight{margin:6px 0;padding-left:20px}
+  ul.tight li{margin:5px 0;font-size:13.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <div>
+      <span class="badge">TICA 天加环境科技</span>
+      <span class="badge">东南亚区域 · 渠道伙伴线索池</span>
+      <span class="badge">2026-08 版</span>
+    </div>
+    <h1>东南亚潜在经销商 / 渠道伙伴 TOP50 清单</h1>
+    <div class="sub">面向 经销商(Distributor) / 机电总包(M&amp;E) / 净化工程EPC / 数据中心MEP 四类渠道 · 六国（新加坡·印尼·马来西亚·泰国·越南·菲律宾）</div>
+    <div class="toc">
+      <a href="#summary">① 速览</a>
+      <a href="#dist">② 国别分布</a>
+      <a href="#sg">③ 新加坡</a>
+      <a href="#my">④ 马来西亚</a>
+      <a href="#id">⑤ 印尼</a>
+      <a href="#th">⑥ 泰国</a>
+      <a href="#vn">⑦ 越南</a>
+      <a href="#ph">⑧ 菲律宾</a>
+      <a href="#strat">⑨ 渠道战略</a>
+      <a href="#method">⑩ 方法与免责</a>
+    </div>
+  </header>
+
+  <section id="summary">
+    <h2>① 执行速览</h2>
+    <div class="grid g3">
+      <div class="card"><div class="kpi">50</div><div class="kpi-label">渠道伙伴总数</div></div>
+      <div class="card"><div class="kpi s">6</div><div class="kpi-label">覆盖国家</div></div>
+      <div class="card"><div class="kpi s">4</div><div class="kpi-label">渠道类型</div></div>
+    </div>
+    <div class="grid g3" style="margin-top:16px">
+      <div class="card"><div class="kpi s" style="color:var(--pA)">A 级 16</div><div class="kpi-label">首选（品牌空白/强匹配/可接触）</div></div>
+      <div class="card"><div class="kpi s" style="color:var(--pB)">B 级 22</div><div class="kpi-label">培育（需授权/认证谈判）</div></div>
+      <div class="card"><div class="kpi s" style="color:var(--pc)">C 级 12</div><div class="kpi-label">观察（综合总包/待核验）</div></div>
+    </div>
+    <div class="callout">
+      <b>清单定位：</b>这是与上一版「终端客户 TOP50」配套的<b>渠道层</b>。终端客户（数据中心/医院/半导体）大多通过<b>本地机电总包、净化工程商、HVAC 经销商</b>完成设备选型与采购。
+      天加在东南亚已有<b>吉隆坡工厂 + 越南办事处</b>基础，本清单即用于筛选可签约的<b>国家总代 / 区域经销商 / 项目型 M&amp;E 伙伴</b>。
+      <br><span class="flag">⚠ 带「需核验」标记者为公开知名企业，联系人/代理资质需实地确认；其余为公开检索到的在营企业。</span>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <h3 style="margin-top:0">渠道类型图例</h3>
+      <span class="tp d">经销商 Distributor</span> 代理销售设备、覆盖零售/项目网点的贸易商
+      <span class="tp m">机电总包 M&amp;E</span> 设计-采购-安装-维保一体化工程商（项目主入口）
+      <span class="tp c">净化工程 Cleanroom EPC</span> 洁净室/洁净厂房专项工程商（半导体/药厂）
+      <span class="tp e">数据中心 MEP</span> 数据中心机电/制冷专业承包商
+    </div>
+  </section>
+
+  <section id="dist">
+    <h2>② 国别分布</h2>
+    <p class="note">按总部/核心运营地统计。新加坡与马来西亚集中度最高（区域枢纽 + 半导体集群拉动）。</p>
+    <div class="card">
+      <div class="bar-row"><div class="name">马来西亚</div><div class="bar"><span style="width:90%"></span></div><div class="small">9</div></div>
+      <div class="bar-row"><div class="name">印尼</div><div class="bar"><span style="width:90%"></span></div><div class="small">9</div></div>
+      <div class="bar-row"><div class="name">越南</div><div class="bar"><span style="width:80%"></span></div><div class="small">8</div></div>
+      <div class="bar-row"><div class="name">泰国</div><div class="bar"><span style="width:80%"></span></div><div class="small">8</div></div>
+      <div class="bar-row"><div class="name">菲律宾</div><div class="bar"><span style="width:80%"></span></div><div class="small">8</div></div>
+      <div class="bar-row"><div class="name">新加坡</div><div class="bar"><span style="width:60%"></span></div><div class="small">8</div></div>
+      <div class="legend">新加坡=高端 M&amp;E/cleanroom/DC 专业商（单价高、决策专业）；马来=槟城半导体 M&amp;E + 品牌经销商；印尼/越南=品牌经销商密集、价格敏感；泰国/菲律宾=日美品牌代理为主，需差异化切入。</div>
+    </div>
+  </section>
+
+  <!-- ============ 新加坡 ============ -->
+  <section id="sg">
+    <div class="cat-head"><div><b>③ 新加坡</b> —— 高端专业 M&amp;E / Cleanroom / DC 承包商</div><div class="cnt">8 家</div></div>
+    <table>
+      <thead><tr><th>#</th><th>公司</th><th>类型</th><th>匹配天加品类</th><th>优先级</th><th>合作切入点</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>DLM Pte Ltd</td><td><span class="tp e">DC MEP</span><span class="tp m">M&amp;E</span></td><td>磁悬浮冷水机 / 高效机房</td><td><span class="pill pa">A</span></td><td>BCA L6，数据中心+洁净室专长，AI液冷；可做天加高效制冷方案集成商</td></tr>
+        <tr><td>2</td><td>Eindec (Kyodo) — SGX:42Z</td><td><span class="tp c">Cleanroom</span><span class="tp e">DC MEP</span></td><td>洁净空调 / 模块化DC</td><td><span class="pill pa">A</span></td><td>上市工程集团，服务 Micron/GF/WD 等晶圆厂；洁净与DC双赛道</td></tr>
+        <tr><td>3</td><td>Techniques Air Conditioning &amp; Eng.</td><td><span class="tp c">Cleanroom</span><span class="tp m">M&amp;E</span></td><td>洁净空调 / 工艺冷冻</td><td><span class="pill pa">A</span></td><td>1983起，半导体fab/生物制药洁净室专业商，直接触达晶圆厂项目</td></tr>
+        <tr><td>4</td><td>Winsteam Engineering</td><td><span class="tp m">M&amp;E</span><span class="tp c">Cleanroom</span></td><td>VRF / 冷水机 / 洁净</td><td><span class="pill pb">B</span></td><td>30+年 ACMV/MEP，覆盖酒店/医院/DC，可做区域经销+项目</td></tr>
+        <tr><td>5</td><td>A-Power Engineering</td><td><span class="tp m">M&amp;E</span></td><td>中央空调 / 冷水机</td><td><span class="pill pb">B</span></td><td>BCA L6，服务数据中心与政府机构，维保+设计安装一体</td></tr>
+        <tr><td>6</td><td>Hock Lock Leong Engineering</td><td><span class="tp m">M&amp;E</span></td><td>商用 HVAC</td><td><span class="pill pb">B</span><span class="flag"> 需核验</span></td><td>新加坡老牌 ACMV 工程商，商办/工业项目覆盖广</td></tr>
+        <tr><td>7</td><td>Lian Ho Heng Engineering</td><td><span class="tp m">M&amp;E</span></td><td>VRF / 模块机</td><td><span class="pill pc">C</span><span class="flag"> 需核验</span></td><td>本地 ACMV 承包商，中小项目渠道</td></tr>
+        <tr><td>8</td><td>United Mechanical Engineering</td><td><span class="tp m">M&amp;E</span></td><td>中央空调</td><td><span class="pill pc">C</span><span class="flag"> 需核验</span></td><td>综合机电，可作项目型伙伴评估</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ============ 马来西亚 ============ -->
+  <section id="my">
+    <div class="cat-head"><div><b>④ 马来西亚</b> —— 槟城半导体 M&amp;E + 品牌经销商</div><div class="cnt">9 家</div></div>
+    <table>
+      <thead><tr><th>#</th><th>公司</th><th>类型</th><th>匹配天加品类</th><th>优先级</th><th>合作切入点</th></tr></thead>
+      <tbody>
+        <tr><td>9</td><td>NYKK Engineering Group</td><td><span class="tp d">经销商</span><span class="tp e">DC MEP</span></td><td>EC风机 / 高效制冷部件</td><td><span class="pill pa">A</span></td><td>40+年HVAC，代理 Novenco 等；项目含 Genting/KLCC/WD，DC+工厂场景</td></tr>
+        <tr><td>10</td><td>Golden Dynabyte</td><td><span class="tp d">经销商</span></td><td>Gree竞品替代 / VRF</td><td><span class="pill pa">A</span><span class="flag"> 需核验</span></td><td>马来西亚 Gree 主力经销商，可谈天加轻商/VRF独家或非独家代理</td></tr>
+        <tr><td>11</td><td>Malaya MNE Engineering</td><td><span class="tp m">M&amp;E</span></td><td>中央空调 / ACMV</td><td><span class="pill pb">B</span></td><td>1979起，商办/零售/酒店/工业一站式 M&amp;E</td></tr>
+        <tr><td>12</td><td>MCC Technique</td><td><span class="tp m">M&amp;E</span></td><td>ACMV / 工艺冷冻</td><td><span class="pill pb">B</span></td><td>CIDB G7，EPC 能力，HT/LV 电气+空调一体</td></tr>
+        <tr><td>13</td><td>Gafis (M) Sdn Bhd</td><td><span class="tp m">M&amp;E</span></td><td>商用 HVAC / 维保</td><td><span class="pill pb">B</span></td><td>ISO三体系，设施管理+新装，覆盖 TNB/机场等客户</td></tr>
+        <tr><td>14</td><td>Total Solutions M&amp;E (Daikin MY子)</td><td><span class="tp m">M&amp;E</span></td><td>——（竞品）</td><td><span class="pill pc">C</span></td><td>大金全资，作为竞品参照；其客户群即天加替代目标</td></tr>
+        <tr><td>15</td><td>Kelington Group Berhad</td><td><span class="tp c">Cleanroom</span></td><td>洁净厂房 UHP 管路</td><td><span class="pill pb">B</span></td><td>上市，半导体fab超高纯气体/化学品管路专家，洁净室生态关键伙伴</td></tr>
+        <tr><td>16</td><td>UEM Edgenta Berhad</td><td><span class="tp m">M&amp;E</span></td><td>设施管理 HVAC</td><td><span class="pill pb">B</span><span class="flag"> 需核验</span></td><td>上市设施管理巨头，医院/数据中心运维体量，维保耗材入口</td></tr>
+        <tr><td>17</td><td>IJM (M&amp;E 分支)</td><td><span class="tp m">M&amp;E</span></td><td>商用中央空调</td><td><span class="pill pc">C</span><span class="flag"> 需核验</span></td><td>上市建筑集团，大型综合体自带的机电采购入口</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ============ 印尼 ============ -->
+  <section id="id">
+    <div class="cat-head"><div><b>⑤ 印尼</b> —— 品牌经销商密集 + 综合 M&amp;E</div><div class="cnt">9 家</div></div>
+    <table>
+      <thead><tr><th>#</th><th>公司</th><th>类型</th><th>匹配天加品类</th><th>优先级</th><th>合作切入点</th></tr></thead>
+      <tbody>
+        <tr><td>18</td><td>Sarana Teknik Wiratama</td><td><span class="tp m">M&amp;E</span><span class="tp c">Cleanroom</span></td><td>洁净 / 冷水机 / 空调</td><td><span class="pill pa">A</span></td><td>1979起，空调→洁净室→机电全栈，雅加达+泗水双基地</td></tr>
+        <tr><td>19</td><td>Mitra Ganesha</td><td><span class="tp d">经销商</span></td><td>VRF / 冷水机 / 风管</td><td><span class="pill pa">A</span></td><td>Daikin/McQuay/Panasonic/Gree 授权商+风管专家+冷水机安装</td></tr>
+        <tr><td>20</td><td>Binamitra Handaya Perkasa</td><td><span class="tp d">经销商</span></td><td>Gree/Carrier/Toshiba 替代</td><td><span class="pill pa">A</span></td><td>Carrier/Toshiba/Gree 授权商，直采工厂价，可谈天加补充线</td></tr>
+        <tr><td>21</td><td>DBILDR Indonesia</td><td><span class="tp m">M&amp;E</span></td><td>中央空调 / 厂房</td><td><span class="pill pb">B</span></td><td>2010起，零售/办公/实验室/高科厂房 M&amp;E 总包</td></tr>
+        <tr><td>22</td><td>Jaya Teknik Indonesia</td><td><span class="tp d">经销商</span></td><td>York/机房空调 替代</td><td><span class="pill pb">B</span></td><td>1968起，York/Liebert 授权分销，银行/电信/消防综合</td></tr>
+        <tr><td>23</td><td>Jaya Konstruksi (Jaya Teknik 母公司)</td><td><span class="tp m">M&amp;E</span></td><td>大型项目 HVAC</td><td><span class="pill pc">C</span><span class="flag"> 需核验</span></td><td>上市建筑集团，政府/商业大型项目机电总包</td></tr>
+        <tr><td>24</td><td>ACSET Indonusa</td><td><span class="tp m">M&amp;E</span></td><td>商用中央空调</td><td><span class="pill pc">C</span><span class="flag"> 需核验</span></td><td>上市建筑服务商，综合体机电入口</td></tr>
+        <tr><td>25</td><td>WIKA (Wijaya Karya)</td><td><span class="tp m">M&amp;E</span></td><td>基建/厂房 HVAC</td><td><span class="pill pc">C</span><span class="flag"> 需核验</span></td><td>国有基建巨头，工业园/电厂配套机电体量</td></tr>
+        <tr><td>26</td><td>Adhi Karya</td><td><span class="tp m">M&amp;E</span></td><td>基建 HVAC</td><td><span class="pill pc">C</span><span class="flag"> 需核验</span></td><td>国有建筑上市，轨道/楼宇机电采购</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ============ 泰国 ============ -->
+  <section id="th">
+    <div class="cat-head"><div><b>⑥ 泰国</b> —— 日美品牌代理主导，差异化空间大</div><div class="cnt">8 家</div></div>
+    <table>
+      <thead><tr><th>#</th><th>公司</th><th>类型</th><th>匹配天加品类</th><th>优先级</th><th>合作切入点</th></tr></thead>
+      <tbody>
+        <tr><td>27</td><td>Siam Daikin Sales (Siam Motors)</td><td><span class="tp d">经销商</span></td><td>——（竞品）</td><td><span class="pill pc">C</span></td><td>大金泰国代理，参照其网点；其客户即天加替代目标</td></tr>
+        <tr><td>28</td><td>Daiichi Central (Thailand)</td><td><span class="tp d">经销商</span></td><td>VRF / 商用空调</td><td><span class="pill pb">B</span></td><td>大金授权经销，工业客户节能改造经验</td></tr>
+        <tr><td>29</td><td>Mahajak (MHI Air Conditioners)</td><td><span class="tp d">经销商</span></td><td>三菱重工替代</td><td><span class="pill pb">B</span></td><td>三菱重工泰国制造/分销，商用工业场景</td></tr>
+        <tr><td>30</td><td>ECT Professional</td><td><span class="tp m">M&amp;E</span><span class="tp d">经销商</span></td><td>VRF / 中央空调</td><td><span class="pill pb">B</span></td><td>大金授权商，机电+卫浴+空调一体化工程</td></tr>
+        <tr><td>31</td><td>Carrier Thailand</td><td><span class="tp d">经销商</span></td><td>——（竞品）</td><td><span class="pill pc">C</span></td><td>开利泰国，商用/轻型商用参照</td></tr>
+        <tr><td>32</td><td>Trane Thailand</td><td><span class="tp d">经销商</span></td><td>——（竞品）</td><td><span class="pill pc">C</span></td><td>特灵泰国，冷水机/大型项目参照</td></tr>
+        <tr><td>33</td><td>Mitsubishi Electric (Thailand)</td><td><span class="tp d">经销商</span></td><td>——（竞品）</td><td><span class="pill pc">C</span></td><td>三菱电机泰国，VRF/商用参照</td></tr>
+        <tr><td>34</td><td>Siam Motors Group</td><td><span class="tp d">经销商</span></td><td>渠道母体</td><td><span class="pill pc">C</span><span class="flag"> 需核验</span></td><td>大金泰国代理母公司，综合集团，可探第二品牌合作</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ============ 越南 ============ -->
+  <section id="vn">
+    <div class="cat-head"><div><b>⑦ 越南</b> —— 品牌经销商成长快，价格敏感</div><div class="cnt">8 家</div></div>
+    <table>
+      <thead><tr><th>#</th><th>公司</th><th>类型</th><th>匹配天加品类</th><th>优先级</th><th>合作切入点</th></tr></thead>
+      <tbody>
+        <tr><td>35</td><td>SAVA M.E JSC</td><td><span class="tp d">经销商</span><span class="tp m">M&amp;E</span></td><td>VRF / 中央空调</td><td><span class="pill pa">A</span></td><td>越南头部空调供应商，FDI客户为主，国家级项目经验</td></tr>
+        <tr><td>36</td><td>Tan Phuc Hung JSC</td><td><span class="tp d">经销商</span></td><td>Gree/Midea 替代</td><td><span class="pill pa">A</span></td><td>Gree/Midea 授权分销，VRF/冷水机全覆盖，可谈天加代理</td></tr>
+        <tr><td>37</td><td>HRT Air Conditioner</td><td><span class="tp m">M&amp;E</span></td><td>VRF / 冷水机 / 洁净</td><td><span class="pill pa">A</span></td><td>河内15+年 HVAC 承包商，多品牌 VRF+冷水机+维保</td></tr>
+        <tr><td>38</td><td>Project Mechanical Electricity JSC</td><td><span class="tp d">经销商</span></td><td>Carrier/Toshiba 替代</td><td><span class="pill pb">B</span></td><td>2001起，Carrier/Toshiba 战略伙伴，ISO9001，北越网点</td></tr>
+        <tr><td>39</td><td>Hiep Anh Nhat</td><td><span class="tp d">经销商</span></td><td>多品牌 VRF</td><td><span class="pill pb">B</span></td><td>Daikin/Panasonic/Samsung 等授权，同奈工业客户</td></tr>
+        <tr><td>40</td><td>VRV.vn (Daikin VRV)</td><td><span class="tp d">经销商</span></td><td>——（竞品）</td><td><span class="pill pc">C</span></td><td>大金 VRV 专业承包商，参照其项目打法</td></tr>
+        <tr><td>41</td><td>R.E.E (Reetech)</td><td><span class="tp d">经销商</span></td><td>本土制造竞合</td><td><span class="pill pb">B</span></td><td>越南本土空调制造商(Reetech)，可作 OEM/贴牌或渠道合作对象</td></tr>
+        <tr><td>42</td><td>Midea Vietnam (官方授权商)</td><td><span class="tp d">经销商</span></td><td>Midea 竞品替代</td><td><span class="pill pa">A</span><span class="flag"> 需核验</span></td><td>美的越南当地网络，天加轻商/VRF 可直接对标招商</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ============ 菲律宾 ============ -->
+  <section id="ph">
+    <div class="cat-head"><div><b>⑧ 菲律宾</b> —— Concepcion 一家独大，长尾经销商分散</div><div class="cnt">8 家</div></div>
+    <table>
+      <thead><tr><th>#</th><th>公司</th><th>类型</th><th>匹配天加品类</th><th>优先级</th><th>合作切入点</th></tr></thead>
+      <tbody>
+        <tr><td>43</td><td>Concepcion Industrial (CIC)</td><td><span class="tp d">经销商</span></td><td>Carrier+Midea 体系</td><td><span class="pill pa">A</span></td><td>菲 Carrier+Midea 总代，240+合作伙/10,000+网点；第二品牌或互补线首选</td></tr>
+        <tr><td>44</td><td>Temprite</td><td><span class="tp m">M&amp;E</span><span class="tp c">Cleanroom</span></td><td>洁净 / 中央空调</td><td><span class="pill pa">A</span></td><td>1965起，Carrier/Trane/Mitsubishi/Daikin 授权，洁净室+药厂+呼叫中心</td></tr>
+        <tr><td>45</td><td>Air Prosystems Inc.</td><td><span class="tp d">经销商</span></td><td>多品牌 VRF</td><td><span class="pill pb">B</span></td><td>20+年，Koppel/LG/Panasonic/Daikin/Carrier 授权安装，ISO9001</td></tr>
+        <tr><td>46</td><td>Weida HVAC</td><td><span class="tp d">经销商</span></td><td>Gree/Hisense VRF</td><td><span class="pill pb">B</span></td><td>Hisense/Gree 授权，马尼拉多个 VRF 商业项目落地</td></tr>
+        <tr><td>47</td><td>Bagama Enterprises</td><td><span class="tp d">经销商</span></td><td>多品牌 VRF</td><td><span class="pill pc">C</span></td><td>Panasonic/Koppel/Daikin 授权，马尼拉商办一站式</td></tr>
+        <tr><td>48</td><td>Goldwyn Contractor</td><td><span class="tp d">经销商</span></td><td>Gree 渠道</td><td><span class="pill pc">C</span></td><td>Gree 认证经销商（马尼拉），轻商铺量触点</td></tr>
+        <tr><td>49</td><td>Firstar HVAC Inc.</td><td><span class="tp d">经销商</span></td><td>Gree 渠道</td><td><span class="pill pc">C</span></td><td>Gree 认证经销商，项目型安装</td></tr>
+        <tr><td>50</td><td>Kirin HVAC Corp.</td><td><span class="tp d">经销商</span></td><td>Gree 渠道</td><td><span class="pill pc">C</span></td><td>Gree 认证经销商，马尼拉网点</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ============ 渠道战略 ============ -->
+  <section id="strat">
+    <h2>⑨ 渠道拓展战略建议</h2>
+    <div class="grid g2">
+      <div class="card">
+        <h3 style="margin-top:0">按品类选渠道</h3>
+        <ul class="tight">
+          <li><b>磁悬浮冷水机 / 高效机房</b>：走 <b>DC MEP 专业商</b>（DLM、Eindec、NYKK）+ 与 True IDC/GDS 等终端客户的机电分包绑定。</li>
+          <li><b>洁净空调 / 洁净室</b>：绑定 <b>Cleanroom EPC</b>（Techniques、Sarana Teknik、Kelington、Temprite）。</li>
+          <li><b>VRF / 轻型商用</b>：签 <b>国家/区域经销商</b>（Mitra Ganesha、Tan Phuc Hung、SAVA、Concepcion 第二品牌）。</li>
+          <li><b>ORC 地热</b>：不经由经销商，走厂商直签 + 本地 EPC/JV（见上版客户清单）。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3 style="margin-top:0">三级渠道架构建议</h3>
+        <ul class="tight">
+          <li><b>国家级总代</b>（每国 1-2 家）：负责备货、仓储、二级网点——优先 Concepcion(菲)、Mitra Ganesha(印尼)、SAVA(越)。</li>
+          <li><b>项目型 M&amp;E</b>（每国 3-5 家）：负责招投标与安装——DLM、Sarana、HRT、Temprite 等。</li>
+          <li><b>专业细分商</b>：Cleanroom/DC MEP 作为技术与样板项目入口。</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout">
+      <b>谈判要点：</b>
+      ① 东南亚多为<b>多品牌授权商</b>（同一家同时卖 Daikin/Carrier/Gree），天加可作为<b>补充高性价比线或独家差异化线</b>切入，不必要求独家；
+      ② 对 <b>A 级经销商</b>优先给样板项目支持、联合方案与本地产能（吉隆坡工厂）背书；
+      ③ <b>菲律宾 Concepcion、印尼 Mitra Ganesha、越南 SAVA</b> 三家体量最大，建议作为首批国家总代重点谈判对象。
+    </div>
+  </section>
+
+  <!-- ============ 方法 ============ -->
+  <section id="method">
+    <h2>⑩ 数据方法与免责声明</h2>
+    <div class="card">
+      <p class="small">
+        <b>数据来源：</b>本清单基于 2024–2026 年公开网络检索（企业官网、行业目录 Yellow Pages、SGX/上市公司公告、品牌授权商页面等）整理，结合天加产品线（磁悬浮冷水机、洁净空调、VRF/轻商、ORC）匹配得出。<br><br>
+        <b>优先级定义：</b>
+        <span class="pill pa">A</span> 品牌空白/强匹配/可接触（首选招商或项目绑定）；
+        <span class="pill pb">B</span> 需授权/认证或竞品共存谈判（培育）；
+        <span class="pill pc">C</span> 综合总包或竞品参照/待核验（观察）。<br><br>
+        <b>重要提示：</b>
+        ① 本清单为<b>渠道线索池</b>，非经核实的签约伙伴库；带「需核验」者为公开知名企业，<b>联系人、代理资质、现有品牌冲突须销售团队实地确认</b>。<br>
+        ② 标注「竞品」者为现有日美品牌代理，作为<b>替代目标参照</b>，合作需评估其品牌排他条款。<br>
+        ③ 多品牌授权商普遍存在，天加宜以<b>差异化/高性价比补充线</b>切入，避免硬性独家要求。<br>
+        ④ 落地前请结合天加合规、反垄断与风控要求，并核实各公司最新动态与代理政策。
+      </p>
+    </div>
+  </section>
+
+  <footer>
+    生成：天加环境科技 · 东南亚区域销售支持 ｜ 报告版本 2026-08 ｜ 数据窗口 2024–2026 公开信息<br>
+    本文件仅供内部渠道策略参考，不作为商业承诺或投资依据。建议与《东南亚潜在客户 TOP50（终端）》配套使用。
+  </footer>
+</div>
+</body>
+</html>
