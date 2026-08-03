@@ -83,6 +83,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 <div class="tabs">
   <div class="tab active" onclick="switchTab('overview')">📈 销售总览</div>
   <div class="tab" onclick="switchTab('dealer')">🏢 客户分析</div>
+  <div class="tab" onclick="switchTab('market')">📊 东南亚市场战略</div>
+  <div class="tab" onclick="switchTab('top50cust')">🎯 TOP50 终端客户</div>
+  <div class="tab" onclick="switchTab('top50dist')">🤝 TOP50 经销商</div>
 </div>
 
 <div class="filters">
@@ -135,6 +138,21 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
       <div class="chart-card"><h3 id="dealerMonthlyTitle">📅 客户每月业绩</h3><canvas id="chartDealerMonthly"></canvas></div>
       <div class="chart-card"><h3 id="factoryChartTitle">🏭 按工厂销售额分布</h3><canvas id="chartFactory"></canvas></div>
     </div>
+  </div>
+  
+  <!-- TAB 3: Market Strategy -->
+  <div class="tab-content" id="tab-market" style="padding:0;">
+    <iframe src="tica_se_asia_market_analysis.html" style="width:100%;height:calc(100vh - 120px);border:none;display:block;"></iframe>
+  </div>
+  
+  <!-- TAB 4: TOP50 Customers -->
+  <div class="tab-content" id="tab-top50cust" style="padding:0;">
+    <iframe src="tica_sea_top50_customers.html" style="width:100%;height:calc(100vh - 120px);border:none;display:block;"></iframe>
+  </div>
+  
+  <!-- TAB 5: TOP50 Distributors -->
+  <div class="tab-content" id="tab-top50dist" style="padding:0;">
+    <iframe src="tica_sea_top50_distributors.html" style="width:100%;height:calc(100vh - 120px);border:none;display:block;"></iframe>
   </div>
 </div>
 
@@ -637,8 +655,12 @@ function renderFactoryChart() {
 function switchTab(tab) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-  document.querySelector(`.tab:nth-child(${tab === 'overview' ? 1 : 2})`).classList.add('active');
+  const idx = {overview:1, dealer:2, market:3, top50cust:4, top50dist:5}[tab] || 1;
+  document.querySelector(`.tab:nth-child(${idx})`).classList.add('active');
   document.getElementById('tab-' + tab).classList.add('active');
+  // hide filters for iframe-based tabs
+  const filtersEl = document.querySelector('.filters');
+  if (filtersEl) filtersEl.style.display = (tab === 'overview' || tab === 'dealer') ? '' : 'none';
   setTimeout(() => { Object.values(charts).forEach(c => c?.resize()); }, 100);
 }
 
