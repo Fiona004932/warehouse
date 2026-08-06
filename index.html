@@ -177,56 +177,45 @@ async function loadData() {
   document.querySelector('.loading')?.remove();
   let loaded = false, lastErr = null;
 
-  // Helper: fetch and parse JSON (handles gzip via DecompressionStream)
-  async function tryFetch(url, isGzip) {
-    const resp = await fetch(url);
-    if (!resp.ok) return null;
-    let text;
-    if (isGzip) {
-      // Read as ArrayBuffer to avoid browser auto-decompressing Content-Encoding
-      const buf = await resp.arrayBuffer();
-      const ds = new DecompressionStream('gzip');
-      const writer = ds.writable.getWriter();
-      const reader = ds.readable.getReader();
-      writer.write(buf);
-      writer.close();
-      const chunks = [];
-      while (true) {
-        const {done, value} = await reader.read();
-        if (done) break;
-        chunks.push(value);
-      }
-      const totalLen = chunks.reduce((s,c) => s + c.length, 0);
-      const result = new Uint8Array(totalLen);
-      let offset = 0;
-      for (const c of chunks) { result.set(c, offset); offset += c.length; }
-      text = new TextDecoder().decode(result);
-    } else {
-      text = await resp.text();
-    }
-    if (text.trim().startsWith('[') || text.trim().startsWith('{')) {
-      rawData = JSON.parse(text);
-      return true;
-    }
-    return null;
-  }
-
-  // Strategy 1: raw data.json (works on CloudStudio, local)
+  // Strategy 1: full data.json (CloudStudio, local)
   try {
-    loaded = await tryFetch('data.json?v=' + Date.now(), false);
-    if (loaded) console.log('Loaded', rawData.length, 'records (JSON)');
+    const resp = await fetch('data.json?v=' + Date.now());
+    if (resp.ok) {
+      const text = await resp.text();
+      if (text.trim().startsWith('[')) {
+        rawData = JSON.parse(text);
+        loaded = true;
+        console.log('Loaded', rawData.length, 'records (data.json)');
+      }
+    }
   } catch(e) { lastErr = e; }
 
-  // Strategy 2: gzipped data.json.gz (for GitHub Pages)
+  // Strategy 2: split parts (GitHub Pages)
   if (!loaded) try {
-    loaded = await tryFetch('data.json.gz?v=' + Date.now(), true);
-    if (loaded) console.log('Loaded', rawData.length, 'records (GZIP)');
+    const [r1, r2] = await Promise.all([
+      fetch('data_part1.json?v=' + Date.now()),
+      fetch('data_part2.json?v=' + Date.now())
+    ]);
+    if (r1.ok && r2.ok) {
+      const [t1, t2] = await Promise.all([r1.text(), r2.text()]);
+      const d1 = JSON.parse(t1), d2 = JSON.parse(t2);
+      rawData = [...d1, ...d2];
+      loaded = true;
+      console.log('Loaded', rawData.length, 'records (split parts)');
+    }
   } catch(e) { lastErr = e; }
 
-  // Strategy 3: CloudStudio fallback (cross-origin, may fail)
+  // Strategy 3: CloudStudio remote fallback
   if (!loaded) try {
-    loaded = await tryFetch('https://ece4a8627be34eda95724ae727012ee2.sh4.agentos-app.net/data.json?v=' + Date.now(), false);
-    if (loaded) console.log('Loaded', rawData.length, 'records (CloudStudio)');
+    const resp = await fetch('https://ece4a8627be34eda95724ae727012ee2.sh4.agentos-app.net/data.json?v=' + Date.now());
+    if (resp.ok) {
+      const text = await resp.text();
+      if (text.trim().startsWith('[')) {
+        rawData = JSON.parse(text);
+        loaded = true;
+        console.log('Loaded', rawData.length, 'records (CloudStudio)');
+      }
+    }
   } catch(e) { lastErr = e; }
 
   if (!loaded) {
