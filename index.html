@@ -175,26 +175,47 @@ let charts = {};
 // ==================== DATA LOADING ====================
 async function loadData() {
   document.querySelector('.loading')?.remove();
-  const urls = [
-    'data.json?v=' + Date.now(),
-    'https://ece4a8627be34eda95724ae727012ee2.sh4.agentos-app.net/data.json?v=' + Date.now()
-  ];
-  let lastErr = null, loaded = false;
-  for (const url of urls) {
-    try {
-      const resp = await fetch(url);
-      if (!resp.ok) continue;
-      const text = await resp.text();
-      if (text.trim().startsWith('[') || text.trim().startsWith('{')) {
-        rawData = JSON.parse(text);
-        console.log('Loaded', rawData.length, 'records from', url.includes('agentos') ? 'CloudStudio' : 'local');
-        loaded = true;
-        break;
-      }
-    } catch(e) { lastErr = e; }
+  let loaded = false, lastErr = null;
+
+  // Helper: fetch and parse JSON (handles gzip via DecompressionStream)
+  async function tryFetch(url, isGzip) {
+    const resp = await fetch(url);
+    if (!resp.ok) return null;
+    let text;
+    if (isGzip) {
+      const ds = new DecompressionStream('gzip');
+      const stream = resp.body.pipeThrough(ds);
+      text = await new Response(stream).text();
+    } else {
+      text = await resp.text();
+    }
+    if (text.trim().startsWith('[') || text.trim().startsWith('{')) {
+      rawData = JSON.parse(text);
+      return true;
+    }
+    return null;
   }
+
+  // Strategy 1: raw data.json (works on CloudStudio, local)
+  try {
+    loaded = await tryFetch('data.json?v=' + Date.now(), false);
+    if (loaded) console.log('Loaded', rawData.length, 'records (JSON)');
+  } catch(e) { lastErr = e; }
+
+  // Strategy 2: gzipped data.json.gz (for GitHub Pages)
+  if (!loaded) try {
+    loaded = await tryFetch('data.json.gz?v=' + Date.now(), true);
+    if (loaded) console.log('Loaded', rawData.length, 'records (GZIP)');
+  } catch(e) { lastErr = e; }
+
+  // Strategy 3: CloudStudio fallback (cross-origin, may fail)
+  if (!loaded) try {
+    loaded = await tryFetch('https://ece4a8627be34eda95724ae727012ee2.sh4.agentos-app.net/data.json?v=' + Date.now(), false);
+    if (loaded) console.log('Loaded', rawData.length, 'records (CloudStudio)');
+  } catch(e) { lastErr = e; }
+
   if (!loaded) {
-    console.warn('Data load failed:', lastErr?.message);
+    console.warn('All data sources failed:', lastErr?.message);
     rawData = generateDemoData();
   }
   processData();
