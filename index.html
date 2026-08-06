@@ -183,9 +183,24 @@ async function loadData() {
     if (!resp.ok) return null;
     let text;
     if (isGzip) {
+      // Read as ArrayBuffer to avoid browser auto-decompressing Content-Encoding
+      const buf = await resp.arrayBuffer();
       const ds = new DecompressionStream('gzip');
-      const stream = resp.body.pipeThrough(ds);
-      text = await new Response(stream).text();
+      const writer = ds.writable.getWriter();
+      const reader = ds.readable.getReader();
+      writer.write(buf);
+      writer.close();
+      const chunks = [];
+      while (true) {
+        const {done, value} = await reader.read();
+        if (done) break;
+        chunks.push(value);
+      }
+      const totalLen = chunks.reduce((s,c) => s + c.length, 0);
+      const result = new Uint8Array(totalLen);
+      let offset = 0;
+      for (const c of chunks) { result.set(c, offset); offset += c.length; }
+      text = new TextDecoder().decode(result);
     } else {
       text = await resp.text();
     }
