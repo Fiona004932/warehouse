@@ -4,8 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CRM 销售分析看板</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
-</script>
+<script src="chart.umd.min.js"></script>
 <style>
 :root {
   --bg: #0f172a; --card: #1e293b; --border: #334155;
@@ -51,6 +50,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .chart-card h3 { font-size: 15px; margin-bottom: 16px; color: var(--text); font-weight: 600; }
 .chart-card canvas { max-height: 350px; }
 .footer { text-align: center; padding: 16px; color: var(--text2); font-size: 12px; border-top: 1px solid var(--border); margin-top: 20px; }
+.data-status { display:none; padding: 10px 24px; font-size: 13px; font-weight: 600; border-bottom: 1px solid var(--border); }
+.data-status.loading { background: rgba(59,130,246,0.15); color: var(--accent); }
+.data-status.ok { background: rgba(34,197,94,0.15); color: var(--green); }
+.data-status.error { background: rgba(239,68,68,0.15); color: var(--red); }
 .multi-dropdown { position: relative; display: inline-block; }
 .multi-trigger { background: var(--bg); color: var(--text); border: 1px solid var(--border); padding: 6px 12px; border-radius: 6px; font-size: 13px; cursor: pointer; min-width: 80px; user-select: none; }
 .multi-panel { display: none; position: absolute; top: 100%; left: 0; background: var(--card); border: 1px solid var(--border); border-radius: 6px; z-index: 100; min-width: 100px; max-height: 200px; overflow-y: auto; padding: 4px 0; margin-top: 2px; }
@@ -79,6 +82,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
     <button class="refresh-btn" onclick="loadData()">🔄 刷新</button>
   </div>
 </div>
+
+<div id="dataStatus" class="data-status"></div>
 
 <div class="tabs">
   <div class="tab active" onclick="switchTab('overview')">📈 销售总览</div>
@@ -174,56 +179,73 @@ let charts = {};
 
 // ==================== DATA LOADING ====================
 async function loadData() {
-  document.querySelector('.loading')?.remove();
+  const statusEl = document.getElementById('dataStatus');
+  const showStatus = (msg, type) => {
+    if (!statusEl) return;
+    statusEl.textContent = msg;
+    statusEl.className = 'data-status ' + (type || '');
+    statusEl.style.display = 'block';
+  };
+  showStatus('数据加载中…', 'loading');
+
   let loaded = false, lastErr = null;
 
-  // Strategy 1: full data.json (CloudStudio, local)
-  try {
-    const resp = await fetch('data.json?v=' + Date.now());
-    if (resp.ok) {
-      const text = await resp.text();
-      if (text.trim().startsWith('[')) {
-        rawData = JSON.parse(text);
-        loaded = true;
-        console.log('Loaded', rawData.length, 'records (data.json)');
-      }
+  // fetch with retry (for the real data source on GitHub Pages)
+  const fetchText = async (url, retries) => {
+    let e;
+    for (let i = 0; i <= retries; i++) {
+      try {
+        const resp = await fetch(url, { cache: 'no-store' });
+        if (resp.ok) {
+          const t = await resp.text();
+          if (t.trim().startsWith('[')) return t;
+          e = new Error('响应不是合法 JSON 数组');
+        } else {
+          e = new Error('HTTP ' + resp.status);
+        }
+      } catch (err) { e = err; }
+      if (i < retries) await new Promise(r => setTimeout(r, 800));
     }
-  } catch(e) { lastErr = e; }
+    throw e;
+  };
 
-  // Strategy 2: split parts (GitHub Pages)
+  // Strategy 1: full data.json (CloudStudio / local) — expected 404 on Pages, no retry
+  try {
+    const text = await fetchText('data.json?v=' + Date.now(), 0);
+    rawData = JSON.parse(text);
+    loaded = true;
+    console.log('Loaded', rawData.length, 'records (data.json)');
+  } catch (e) { lastErr = e; }
+
+  // Strategy 2: split parts (GitHub Pages) — real source, retry on transient failure
   if (!loaded) try {
-    const [r1, r2] = await Promise.all([
-      fetch('data_part1.json?v=' + Date.now()),
-      fetch('data_part2.json?v=' + Date.now())
+    const [t1, t2] = await Promise.all([
+      fetchText('data_part1.json?v=' + Date.now(), 3),
+      fetchText('data_part2.json?v=' + Date.now(), 3)
     ]);
-    if (r1.ok && r2.ok) {
-      const [t1, t2] = await Promise.all([r1.text(), r2.text()]);
-      const d1 = JSON.parse(t1), d2 = JSON.parse(t2);
-      rawData = [...d1, ...d2];
-      loaded = true;
-      console.log('Loaded', rawData.length, 'records (split parts)');
-    }
-  } catch(e) { lastErr = e; }
+    rawData = [...JSON.parse(t1), ...JSON.parse(t2)];
+    loaded = true;
+    console.log('Loaded', rawData.length, 'records (split parts)');
+  } catch (e) { lastErr = e; }
 
   // Strategy 3: CloudStudio remote fallback
   if (!loaded) try {
-    const resp = await fetch('https://ece4a8627be34eda95724ae727012ee2.sh4.agentos-app.net/data.json?v=' + Date.now());
-    if (resp.ok) {
-      const text = await resp.text();
-      if (text.trim().startsWith('[')) {
-        rawData = JSON.parse(text);
-        loaded = true;
-        console.log('Loaded', rawData.length, 'records (CloudStudio)');
-      }
-    }
-  } catch(e) { lastErr = e; }
+    const text = await fetchText('https://ece4a8627be34eda95724ae727012ee2.sh4.agentos-app.net/data.json?v=' + Date.now(), 1);
+    rawData = JSON.parse(text);
+    loaded = true;
+    console.log('Loaded', rawData.length, 'records (CloudStudio)');
+  } catch (e) { lastErr = e; }
 
   if (!loaded) {
     console.warn('All data sources failed:', lastErr?.message);
-    rawData = generateDemoData();
+    showStatus('⚠️ 数据加载失败：' + (lastErr?.message || '网络异常') + '。请检查网络后点击「🔄 刷新」重试。', 'error');
+    return; // 不再用假数据掩盖真实失败
   }
+  showStatus('✅ 已加载 ' + rawData.length.toLocaleString() + ' 条记录（' + new Date().toLocaleString('zh-CN') + '）', 'ok');
+  setTimeout(() => { if (statusEl) statusEl.style.display = 'none'; }, 4000);
+
   processData();
-  setTimeout(() => { applyFilters(); }, 500);
+  setTimeout(() => { applyFilters(); }, 300);
 }
 
 function processData() {
