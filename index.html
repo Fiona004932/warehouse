@@ -190,7 +190,7 @@ async function loadData() {
 
   let loaded = false, lastErr = null;
 
-  // fetch with retry (for the real data source on GitHub Pages)
+  // fetch with retry（GitHub Pages 主源 + CloudStudio 兜底通用）
   const fetchText = async (url, retries) => {
     let e;
     for (let i = 0; i <= retries; i++) {
@@ -198,8 +198,8 @@ async function loadData() {
         const resp = await fetch(url, { cache: 'no-store' });
         if (resp.ok) {
           const t = await resp.text();
-          if (t.trim().startsWith('[')) return t;
-          e = new Error('响应不是合法 JSON 数组');
+          if (t.trim().startsWith('[') || t.trim().startsWith('{')) return t;
+          e = new Error('响应不是合法 JSON');
         } else {
           e = new Error('HTTP ' + resp.status);
         }
@@ -209,31 +209,25 @@ async function loadData() {
     throw e;
   };
 
-  // Strategy 1: full data.json (CloudStudio / local) — expected 404 on Pages, no retry
+  // Strategy 1: 分桶加载（GitHub Pages 主源）
+  // 先拉极小的 manifest.json 拿到桶清单，再并行拉各桶合并 —— 日常只更新变化桶，全量由 manifest 决定
   try {
-    const text = await fetchText('data.json?v=' + Date.now(), 0);
-    rawData = JSON.parse(text);
+    const manifestText = await fetchText('buckets/manifest.json?v=' + Date.now(), 3);
+    const manifest = JSON.parse(manifestText);
+    const texts = await Promise.all(
+      manifest.buckets.map(b => fetchText('buckets/' + b + '?v=' + Date.now(), 3))
+    );
+    rawData = [].concat(...texts.map(t => JSON.parse(t)));
     loaded = true;
-    console.log('Loaded', rawData.length, 'records (data.json)');
-  } catch (e) { lastErr = e; }
+    console.log('Loaded', rawData.length, 'records from', manifest.buckets.length, 'buckets');
+  } catch (e) { lastErr = e; console.warn('分桶加载失败:', e.message); }
 
-  // Strategy 2: split parts (GitHub Pages) — real source, retry on transient failure
-  if (!loaded) try {
-    const [t1, t2] = await Promise.all([
-      fetchText('data_part1.json?v=' + Date.now(), 3),
-      fetchText('data_part2.json?v=' + Date.now(), 3)
-    ]);
-    rawData = [...JSON.parse(t1), ...JSON.parse(t2)];
-    loaded = true;
-    console.log('Loaded', rawData.length, 'records (split parts)');
-  } catch (e) { lastErr = e; }
-
-  // Strategy 3: CloudStudio remote fallback
+  // Strategy 2: CloudStudio 远端整文件兜底
   if (!loaded) try {
     const text = await fetchText('https://ece4a8627be34eda95724ae727012ee2.sh4.agentos-app.net/data.json?v=' + Date.now(), 1);
     rawData = JSON.parse(text);
     loaded = true;
-    console.log('Loaded', rawData.length, 'records (CloudStudio)');
+    console.log('Loaded', rawData.length, 'records (CloudStudio fallback)');
   } catch (e) { lastErr = e; }
 
   if (!loaded) {
