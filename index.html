@@ -23,14 +23,14 @@
 </script>
 <style>
 :root {
-  --bg: #0f172a; --card: #1e293b; --border: #334155;
-  --text: #e2e8f0; --text2: #94a3b8; --accent: #3b82f6;
-  --green: #22c55e; --orange: #f59e0b; --red: #ef4444; --purple: #8b5cf6;
-  --teal: #14b8a6; --pink: #ec4899;
+  --bg: #f4f6f9; --card: #ffffff; --border: #dbe2ea;
+  --text: #1f2a44; --text2: #5b6b85; --accent: #173A63;
+  --green: #1f9d55; --orange: #F08A4B; --red: #d64545; --purple: #6d4abf;
+  --teal: #0d9488; --pink: #d6409f;
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
-.header { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-bottom: 1px solid var(--border); padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+.header { background: linear-gradient(135deg, #ffffff 0%, #eaf0f6 100%); border-bottom: 1px solid var(--border); padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
 .header h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
 .header h1 span { color: var(--accent); }
 .header .subtitle { font-size: 13px; color: var(--text2); margin-top: 4px; }
@@ -104,9 +104,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 <div class="tabs">
   <div class="tab active" onclick="switchTab('overview')">📈 销售总览</div>
   <div class="tab" onclick="switchTab('dealer')">🏢 客户分析</div>
-  <div class="tab" onclick="switchTab('market')">📊 东南亚市场战略</div>
-  <div class="tab" onclick="switchTab('top50cust')">🎯 TOP50 终端客户</div>
-  <div class="tab" onclick="switchTab('top50dist')">🤝 TOP50 经销商</div>
   <div class="tab" onclick="switchTab('hotnews')">📰 热点新闻</div>
 </div>
 
@@ -122,62 +119,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   <button class="btn" onclick="applyFilters()">应用筛选</button>
 </div>
 
-<div class="main">
-  <!-- TAB 1: Overview -->
-  <div class="tab-content active" id="tab-overview">
-    <div class="kpi-row">
-      <div class="kpi-card"><div class="kpi-title">📅 本月销售额</div><div class="kpi-value" id="kpi-month">--</div></div>
-      <div class="kpi-card green"><div class="kpi-title">📊 年度累计</div><div class="kpi-value" id="kpi-year">--</div></div>
-      <div class="kpi-card orange"><div class="kpi-title">📋 累计订单���</div><div class="kpi-value" id="kpi-orders">--</div></div>
-      <div class="kpi-card purple"><div class="kpi-title">🌍 覆盖国家</div><div class="kpi-value" id="kpi-countries">--</div></div>
-    </div>
-    <div class="chart-row" style="grid-template-columns: 1fr 1fr;">
-      <div class="chart-card"><h3>📅 月度销售趋势（同比）</h3><canvas id="chartMonthly"></canvas></div>
-      <div class="chart-card"><h3>🏆 TOP 10 销售员业绩</h3><canvas id="chartTopSales"></canvas></div>
-    </div>
-    <div class="chart-row third">
-      <div class="chart-card"><h3>🌍 各国销售额占比</h3><canvas id="chartCountry"></canvas></div>
-      <div class="chart-card"><h3>📊 各部门业绩对比</h3><canvas id="chartDept"></canvas></div>
-      <div class="chart-card"><h3>📈 月度订单量趋势</h3><canvas id="chartOrderTrend"></canvas></div>
-    </div>
-  </div>
-  
-  <!-- TAB 2: Dealer Analysis -->
-  <div class="tab-content" id="tab-dealer">
-    <div class="kpi-row">
-      <div class="kpi-card"><div class="kpi-title">👥 活跃客户</div><div class="kpi-value" id="kpi-dealers">--</div></div>
-      <div class="kpi-card green"><div class="kpi-title">💰 客户总销售额</div><div class="kpi-value" id="kpi-dealer-amount">--</div></div>
-      <div class="kpi-card orange"><div class="kpi-title">📦 平均订单金额</div><div class="kpi-value" id="kpi-avg-order">--</div></div>
-    </div>
-    <div class="chart-row" style="grid-template-columns: 1fr 2fr;">
-      <div class="chart-card"><h3>📊 客户三年业绩对比表（累计3年TOP 10）</h3><div id="dealerTable" style="max-height:450px;overflow-y:auto;"></div></div>
-      <div class="chart-card" style="position:relative;"><h3 id="l3ChartTitle">📦 客户产品销售额分布（L3分类）</h3>
-      <canvas id="chartProductL3"></canvas>
-      <div id="l3Summary" style="position:absolute;right:24px;bottom:50%;transform:translateY(50%);width:240px;background:rgba(30,41,59,0.85);border:1px solid var(--border);border-radius:8px;padding:12px;font-size:11px;line-height:1.5;max-height:380px;overflow-y:auto;"></div>
-    </div>
-    </div>
-    <div class="chart-row">
-      <div class="chart-card"><h3 id="dealerMonthlyTitle">📅 客户每月业绩</h3><canvas id="chartDealerMonthly"></canvas></div>
-      <div class="chart-card"><h3 id="factoryChartTitle">🏭 按工厂销售额分布</h3><canvas id="chartFactory"></canvas></div>
-    </div>
-  </div>
-  
-  <!-- TAB 3: Market Strategy -->
-  <div class="tab-content" id="tab-market" style="padding:0;">
-    <iframe src="tica_se_asia_market_analysis.html" style="width:100%;height:calc(100vh - 120px);border:none;display:block;"></iframe>
-  </div>
-  
-  <!-- TAB 4: TOP50 Customers -->
-  <div class="tab-content" id="tab-top50cust" style="padding:0;">
-    <iframe src="tica_sea_top50_customers.html" style="width:100%;height:calc(100vh - 120px);border:none;display:block;"></iframe>
-  </div>
-  
-  <!-- TAB 5: TOP50 Distributors -->
-  <div class="tab-content" id="tab-top50dist" style="padding:0;">
-    <iframe src="tica_sea_top50_distributors.html" style="width:100%;height:calc(100vh - 120px);border:none;display:block;"></iframe>
-  </div>
-  
-  <!-- TAB 6: Hot News -->
+<div class="main"><!-- TAB 6: Hot News -->
   <div class="tab-content" id="tab-hotnews" style="padding:0;">
     <iframe src="tica_sea_hot_news.html" style="width:100%;height:calc(100vh - 120px);border:none;display:block;"></iframe>
   </div>
@@ -433,7 +375,7 @@ function renderMonthlyTrend() {
       { label: String(lastYear) + '年', data: priorValues, borderColor: COLORS[1], tension: 0.3, fill: false },
       { label: String(baseYear) + '年', data: curValues, borderColor: COLORS[2], tension: 0.3, fill: false }
     ].filter(d => d.data.some(v => v > 0)) },
-    options: { responsive: true, plugins: { legend: { labels: { color: '#94a3b8' } } }, scales: { x: { ticks: { color: '#94a3b8' } }, y: { ticks: { color: '#94a3b8', callback: v => v + '万' } } } }
+    options: { responsive: true, plugins: { legend: { labels: { color: '#5b6b85' } } }, scales: { x: { ticks: { color: '#5b6b85' } }, y: { ticks: { color: '#5b6b85', callback: v => v + '万' } } } }
   });
 }
 
@@ -447,7 +389,7 @@ function renderTopSales() {
   charts.topSales = new Chart(document.getElementById('chartTopSales'), {
     type: 'bar',
     data: { labels: sorted.map(s => s[0]), datasets: [{ label: '销售额(万)', data: sorted.map(s => s[1]/10000), backgroundColor: COLORS.slice(0,10) }] },
-    options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#94a3b8', callback: v => v+'万' } }, y: { ticks: { color: '#94a3b8' } } } }
+    options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#5b6b85', callback: v => v+'万' } }, y: { ticks: { color: '#5b6b85' } } } }
   });
 }
 
@@ -458,7 +400,7 @@ function renderCountryPie() {
   charts.country = new Chart(document.getElementById('chartCountry'), {
     type: 'doughnut',
     data: { labels: sorted.map(s => s[0]), datasets: [{ data: sorted.map(s => s[1]), backgroundColor: COLORS }] },
-    options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', padding: 12 } } } }
+    options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { color: '#5b6b85', padding: 12 } } } }
   });
 }
 
@@ -469,7 +411,7 @@ function renderDeptBar() {
   charts.dept = new Chart(document.getElementById('chartDept'), {
     type: 'bar',
     data: { labels: sorted.map(s => s[0]), datasets: [{ label: '销售额(万)', data: sorted.map(s => s[1]/10000), backgroundColor: COLORS.slice(4) }] },
-    options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#94a3b8' } }, y: { ticks: { color: '#94a3b8', callback: v => v+'万' } } } }
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#5b6b85' } }, y: { ticks: { color: '#5b6b85', callback: v => v+'万' } } } }
   });
 }
 
@@ -484,7 +426,7 @@ function renderOrderTrend() {
   charts.orderTrend = new Chart(document.getElementById('chartOrderTrend'), {
     type: 'line',
     data: { labels: data.map(d => d[0]), datasets: [{ label: '订单数', data: data.map(d => d[1]), borderColor: COLORS[4], backgroundColor: COLORS[4]+'30', fill: true, tension: 0.3 }] },
-    options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#94a3b8' } }, y: { ticks: { color: '#94a3b8' } } } }
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#5b6b85' } }, y: { ticks: { color: '#5b6b85' } } } }
   });
 }
 
@@ -608,10 +550,10 @@ function renderProductL3() {
     options: {
       indexAxis: 'y',
       responsive: true,
-      plugins: { legend: { labels: { color: '#94a3b8' } } },
+      plugins: { legend: { labels: { color: '#5b6b85' } } },
       scales: {
-        x: { stacked: false, ticks: { color: '#94a3b8', callback: v => v + '万' } },
-        y: { ticks: { color: '#94a3b8' } }
+        x: { stacked: false, ticks: { color: '#5b6b85', callback: v => v + '万' } },
+        y: { ticks: { color: '#5b6b85' } }
       }
     }
   });
@@ -703,7 +645,7 @@ function renderDealerMonthly() {
   charts.dealerMonthly = new Chart(document.getElementById('chartDealerMonthly'), {
     type: 'bar',
     data: { labels: sorted.map(s => s[0]), datasets: [{ label: '销售额(万)', data: sorted.map(s => s[1]/10000), backgroundColor: COLORS[2] }] },
-    options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#94a3b8', maxTicksLimit: 12 } }, y: { ticks: { color: '#94a3b8', callback: v => v+'万' } } } }
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#5b6b85', maxTicksLimit: 12 } }, y: { ticks: { color: '#5b6b85', callback: v => v+'万' } } } }
   });
 }
 
@@ -716,7 +658,7 @@ function renderFactoryChart() {
   charts.factory = new Chart(document.getElementById('chartFactory'), {
     type: 'doughnut',
     data: { labels: sorted.map(s => s[0]), datasets: [{ data: sorted.map(s => s[1]), backgroundColor: COLORS }] },
-    options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8' } } } }
+    options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { color: '#5b6b85' } } } }
   });
 }
 
@@ -724,7 +666,7 @@ function renderFactoryChart() {
 function switchTab(tab) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-  const idx = {overview:1, dealer:2, market:3, top50cust:4, top50dist:5, hotnews:6}[tab] || 1;
+  const idx = {overview:1, dealer:2, hotnews:3}[tab] || 1;
   document.querySelector(`.tab:nth-child(${idx})`).classList.add('active');
   document.getElementById('tab-' + tab).classList.add('active');
   // hide filters for iframe-based tabs
