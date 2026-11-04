@@ -198,12 +198,15 @@ async function loadData() {
 
   let loaded = false, lastErr = null;
 
-  // fetch with retry（GitHub Pages 主源 + CloudStudio 兜底通用）
-  const fetchText = async (url, retries) => {
+  // fetch with timeout + retry：用 AbortController 兜底，避免单个请求 TCP 挂起导致整页永久卡在“加载中”
+  const fetchText = async (url, retries = 2, timeoutMs = 30000) => {
     let e;
     for (let i = 0; i <= retries; i++) {
+      const ctrl = new AbortController();
+      const tid = setTimeout(() => ctrl.abort(), timeoutMs);
       try {
-        const resp = await fetch(url, { cache: 'no-store' });
+        const resp = await fetch(url, { cache: 'no-store', signal: ctrl.signal });
+        clearTimeout(tid);
         if (resp.ok) {
           const t = await resp.text();
           if (t.trim().startsWith('[') || t.trim().startsWith('{')) return t;
@@ -212,27 +215,49 @@ async function loadData() {
           e = new Error('HTTP ' + resp.status);
         }
       } catch (err) { e = err; }
-      if (i < retries) await new Promise(r => setTimeout(r, 800));
+      if (i < retries) await new Promise(r => setTimeout(r, 600));
     }
     throw e;
   };
 
+  // 限并发（6）拉取所有分片，并实时反馈进度，避免 47 个请求同时打满连接且无反馈
+  const fetchBuckets = async (names) => {
+    const CONC = 6;
+    const out = new Array(names.length);
+    let cursor = 0, done = 0;
+    const worker = async () => {
+      while (cursor < names.length) {
+        const my = cursor++;
+        try {
+          out[my] = await fetchText('buckets/' + names[my] + '?v=' + Date.now(), 2, 30000);
+        } catch (err) {
+          out[my] = null;
+          console.warn('分片加载失败', names[my], err.message);
+        }
+        done++;
+        showStatus('数据加载中… ' + done + '/' + names.length + ' 分片', 'loading');
+      }
+    };
+    await Promise.all(Array.from({ length: CONC }, () => worker()));
+    return out;
+  };
+
   // Strategy 1: 分桶加载（GitHub Pages 主源）
-  // 先拉极小的 manifest.json 拿到桶清单，再并行拉各桶合并 —— 日常只更新变化桶，全量由 manifest 决定
+  // 先拉极小的 manifest.json 拿到桶清单，再限并发拉各桶合并
   try {
-    const manifestText = await fetchText('buckets/manifest.json?v=' + Date.now(), 3);
+    const manifestText = await fetchText('buckets/manifest.json?v=' + Date.now(), 3, 20000);
     const manifest = JSON.parse(manifestText);
-    const texts = await Promise.all(
-      manifest.buckets.map(b => fetchText('buckets/' + b + '?v=' + Date.now(), 3))
-    );
-    rawData = [].concat(...texts.map(t => JSON.parse(t)));
+    const texts = await fetchBuckets(manifest.buckets);
+    const okTexts = texts.filter(Boolean);
+    if (okTexts.length === 0) throw new Error('所有分片均加载失败');
+    rawData = [].concat(...okTexts.map(t => JSON.parse(t)));
     loaded = true;
-    console.log('Loaded', rawData.length, 'records from', manifest.buckets.length, 'buckets');
+    console.log('Loaded', rawData.length, 'records from', okTexts.length + '/' + manifest.buckets.length, 'buckets');
   } catch (e) { lastErr = e; console.warn('分桶加载失败:', e.message); }
 
-  // Strategy 2: CloudStudio 远端整文件兜底
+  // Strategy 2: CloudStudio 远端整文件兜底（同样带超时）
   if (!loaded) try {
-    const text = await fetchText('https://ece4a8627be34eda95724ae727012ee2.sh4.agentos-app.net/data.json?v=' + Date.now(), 1);
+    const text = await fetchText('https://ece4a8627be34eda95724ae727012ee2.sh4.agentos-app.net/data.json?v=' + Date.now(), 1, 30000);
     rawData = JSON.parse(text);
     loaded = true;
     console.log('Loaded', rawData.length, 'records (CloudStudio fallback)');
