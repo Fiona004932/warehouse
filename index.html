@@ -104,6 +104,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 <div class="tabs">
   <div class="tab active" onclick="switchTab('overview')">📈 销售总览</div>
   <div class="tab" onclick="switchTab('dealer')">🏢 客户分析</div>
+
   <div class="tab" onclick="switchTab('hotnews')">📰 热点新闻</div>
 </div>
 
@@ -119,7 +120,56 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   <button class="btn" onclick="applyFilters()">应用筛选</button>
 </div>
 
-<div class="main"><!-- TAB 6: Hot News -->
+<div class="main">
+  <!-- TAB 1: Overview -->
+  <div class="tab-content active" id="tab-overview">
+    <div class="kpi-row">
+      <div class="kpi-card"><div class="kpi-title">📅 本月销售额</div><div class="kpi-value" id="kpi-month">--</div></div>
+      <div class="kpi-card green"><div class="kpi-title">📊 年度累计</div><div class="kpi-value" id="kpi-year">--</div></div>
+      <div class="kpi-card orange"><div class="kpi-title">📋 累计订单���</div><div class="kpi-value" id="kpi-orders">--</div></div>
+      <div class="kpi-card purple"><div class="kpi-title">🌍 覆盖国家</div><div class="kpi-value" id="kpi-countries">--</div></div>
+    </div>
+    <div class="chart-row" style="grid-template-columns: 1fr 1fr;">
+      <div class="chart-card"><h3>📅 月度销售趋势（同比）</h3><canvas id="chartMonthly"></canvas></div>
+      <div class="chart-card"><h3>🏆 TOP 10 销售员业绩</h3><canvas id="chartTopSales"></canvas></div>
+    </div>
+    <div class="chart-row third">
+      <div class="chart-card"><h3>🌍 各国销售额占比</h3><canvas id="chartCountry"></canvas></div>
+      <div class="chart-card"><h3>📊 各部门业绩对比</h3><canvas id="chartDept"></canvas></div>
+      <div class="chart-card"><h3>📈 月度订单量趋势</h3><canvas id="chartOrderTrend"></canvas></div>
+    </div>
+  </div>
+  
+  <!-- TAB 2: Dealer Analysis -->
+  <div class="tab-content" id="tab-dealer">
+    <div class="kpi-row">
+      <div class="kpi-card"><div class="kpi-title">👥 活跃客户</div><div class="kpi-value" id="kpi-dealers">--</div></div>
+      <div class="kpi-card green"><div class="kpi-title">💰 客户总销售额</div><div class="kpi-value" id="kpi-dealer-amount">--</div></div>
+      <div class="kpi-card orange"><div class="kpi-title">📦 平均订单金额</div><div class="kpi-value" id="kpi-avg-order">--</div></div>
+    </div>
+    <div class="chart-row" style="grid-template-columns: 1fr 2fr;">
+      <div class="chart-card"><h3>📊 客户三年业绩对比表（累计3年TOP 10）</h3><div id="dealerTable" style="max-height:450px;overflow-y:auto;"></div></div>
+      <div class="chart-card" style="position:relative;"><h3 id="l3ChartTitle">📦 客户产品销售额分布（L3分类）</h3>
+      <canvas id="chartProductL3"></canvas>
+      <div id="l3Summary" style="position:absolute;right:24px;bottom:50%;transform:translateY(50%);width:240px;background:rgba(30,41,59,0.85);border:1px solid var(--border);border-radius:8px;padding:12px;font-size:11px;line-height:1.5;max-height:380px;overflow-y:auto;"></div>
+    </div>
+    </div>
+    <div class="chart-row">
+      <div class="chart-card"><h3 id="dealerMonthlyTitle">📅 客户每月业绩</h3><canvas id="chartDealerMonthly"></canvas></div>
+      <div class="chart-card"><h3 id="factoryChartTitle">🏭 按工厂销售额分布</h3><canvas id="chartFactory"></canvas></div>
+    </div>
+  </div>
+  
+  <!-- TAB 3: Market Strategy -->
+  
+  
+  <!-- TAB 4: TOP50 Customers -->
+  
+  
+  <!-- TAB 5: TOP50 Distributors -->
+  
+  
+  <!-- TAB 6: Hot News -->
   <div class="tab-content" id="tab-hotnews" style="padding:0;">
     <iframe src="tica_sea_hot_news.html" style="width:100%;height:calc(100vh - 120px);border:none;display:block;"></iframe>
   </div>
